@@ -1,6 +1,14 @@
-# fkill-cli [![Build Status](https://travis-ci.org/sindresorhus/fkill-cli.svg?branch=master)](https://travis-ci.org/sindresorhus/fkill-cli)
+<h1 align="center">
+	<br>
+	<img width="360" src="https://rawgit.com/sindresorhus/fkill/master/media/logo.svg" alt="fkill">
+	<br>
+	<br>
+	<br>
+</h1>
 
 > CLI - Force kill processes. Cross-platform.
+
+[![Build Status](https://travis-ci.org/sindresorhus/fkill-cli.svg?branch=master)](https://travis-ci.org/sindresorhus/fkill-cli)
 
 Works on OS X, Linux, Windows.
 
