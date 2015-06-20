@@ -18,7 +18,6 @@ var cli = meow({
 if (cli.input.length === 0) {
 	console.error('Please supply at least one process ID/name');
 	process.exit(64);
-	return;
 }
 
 fkill(cli.input, function (err) {
