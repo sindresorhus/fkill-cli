@@ -1,0 +1,49 @@
+{
+  "name": "fkill-cli",
+  "version": "0.0.0",
+  "description": "CLI - Force kill processes. Cross-platform.",
+  "license": "MIT",
+  "repository": "sindresorhus/fkill-cli",
+  "author": {
+    "name": "Sindre Sorhus",
+    "email": "sindresorhus@gmail.com",
+    "url": "sindresorhus.com"
+  },
+  "bin": {
+    "fkill": "cli.js"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "scripts": {
+    "test": "node test.js"
+  },
+  "files": [
+    "cli.js"
+  ],
+  "keywords": [
+    "cli-app",
+    "cli",
+    "fkill",
+    "kill",
+    "killing",
+    "killall",
+    "taskkill",
+    "sigkill",
+    "sigterm",
+    "force",
+    "exit",
+    "zap",
+    "die",
+    "force",
+    "ps",
+    "proc"
+  ],
+  "dependencies": {
+    "fkill": "^1.0.0",
+    "meow": "^3.3.0"
+  },
+  "devDependencies": {
+    "ava": "0.0.4"
+  }
+}
