@@ -1,7 +1,7 @@
 {
   "name": "fkill-cli",
   "version": "1.0.0",
-  "description": "CLI - Force kill processes. Cross-platform.",
+  "description": "Force kill processes. Cross-platform.",
   "license": "MIT",
   "repository": "sindresorhus/fkill-cli",
   "author": {

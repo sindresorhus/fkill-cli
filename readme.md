@@ -6,7 +6,7 @@
 	<br>
 </h1>
 
-> CLI - Force kill processes. Cross-platform.
+> Force kill processes. Cross-platform.
 
 [![Build Status](https://travis-ci.org/sindresorhus/fkill-cli.svg?branch=master)](https://travis-ci.org/sindresorhus/fkill-cli)
 
