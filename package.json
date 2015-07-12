@@ -40,8 +40,12 @@
     "proc"
   ],
   "dependencies": {
+    "chalk": "^1.1.0",
     "fkill": "^1.0.0",
-    "meow": "^3.3.0"
+    "inquirer": "^0.8.5",
+    "meow": "^3.3.0",
+    "num-sort": "^1.0.0",
+    "ps-list": "^2.0.0"
   },
   "devDependencies": {
     "ava": "0.0.4"
