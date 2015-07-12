@@ -26,13 +26,18 @@ $ npm install --global fkill-cli
 $ fkill --help
 
   Usage
-    $ fkill <pid|name> ...
+    $ fkill [<pid|name> ...]
 
   Example
     $ fkill 1337
     $ fkill Safari
     $ fkill 1337 Safari
+    $ fkill
+
+  Run without arguments to use the interactive interface.
 ```
+
+<img width="321" src="screenshot.png">
 
 
 ## Related

@@ -10,12 +10,15 @@ var numSort = require('num-sort');
 var cli = meow({
 	help: [
 		'Usage',
-		'  $ fkill <pid|name> ...',
+		'  $ fkill [<pid|name> ...]',
 		'',
 		'Example',
 		'  $ fkill 1337',
 		'  $ fkill Safari',
-		'  $ fkill 1337 Safari'
+		'  $ fkill 1337 Safari',
+		'  $ fkill',
+		'',
+		'Run without arguments to use the interactive interface.'
 	]
 });
 
