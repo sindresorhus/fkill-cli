@@ -45,7 +45,7 @@ function listProcesses(processes) {
 }
 
 function init() {
-	psList(function (err, processes) {
+	psList({all: false}, function (err, processes) {
 		if (err) {
 			console.error(err.message);
 			process.exit(1);
