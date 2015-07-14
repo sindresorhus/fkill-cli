@@ -6,7 +6,7 @@
 	<br>
 </h1>
 
-> Force kill processes. Cross-platform.
+> Fabulously kill processes. Cross-platform.
 
 [![Build Status](https://travis-ci.org/sindresorhus/fkill-cli.svg?branch=master)](https://travis-ci.org/sindresorhus/fkill-cli)
 
@@ -28,7 +28,10 @@ $ fkill --help
   Usage
     $ fkill [<pid|name> ...]
 
-  Example
+  Options
+    -f, --force  Force kill
+
+  Examples
     $ fkill 1337
     $ fkill Safari
     $ fkill 1337 Safari

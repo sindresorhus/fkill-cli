@@ -12,7 +12,10 @@ var cli = meow({
 		'Usage',
 		'  $ fkill [<pid|name> ...]',
 		'',
-		'Example',
+		'Options',
+		'  -f, --force  Force kill',
+		'',
+		'Examples',
 		'  $ fkill 1337',
 		'  $ fkill Safari',
 		'  $ fkill 1337 Safari',
@@ -20,6 +23,10 @@ var cli = meow({
 		'',
 		'Run without arguments to use the interactive interface.'
 	]
+}, {
+	alias: {
+		f: 'force'
+	}
 });
 
 function listProcesses(processes) {
@@ -63,7 +70,7 @@ if (cli.input.length === 0) {
 	return;
 }
 
-fkill(cli.input, function (err) {
+fkill(cli.input, cli.flags, function (err) {
 	if (err) {
 		console.error(err.message);
 		process.exit(1);
