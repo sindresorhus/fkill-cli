@@ -6,6 +6,7 @@ var chalk = require('chalk');
 var inquirer = require('inquirer');
 var psList = require('ps-list');
 var numSort = require('num-sort');
+var escExit = require('esc-exit');
 
 var cli = meow({
 	help: [
@@ -61,6 +62,7 @@ function init() {
 			process.exit(1);
 		}
 
+		escExit();
 		listProcesses(processes);
 	});
 }
