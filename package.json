@@ -16,7 +16,7 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "node test.js"
+    "test": "ava"
   },
   "files": [
     "cli.js"
@@ -43,12 +43,12 @@
     "chalk": "^1.1.0",
     "esc-exit": "^1.0.0",
     "fkill": "^2.0.1",
-    "inquirer": "^0.9.0",
+    "inquirer": "^0.10.1",
     "meow": "^3.3.0",
     "num-sort": "^1.0.0",
     "ps-list": "^2.1.0"
   },
   "devDependencies": {
-    "ava": "0.0.4"
+    "ava": "*"
   }
 }
