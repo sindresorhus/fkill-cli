@@ -30,6 +30,13 @@ var cli = meow({
 	}
 });
 
+function init() {
+	return psList({all: false}).then(function (processes) {
+		escExit();
+		listProcesses(processes);
+	});
+}
+
 function listProcesses(processes) {
 	inquirer.prompt([{
 		name: 'processes',
@@ -44,37 +51,12 @@ function listProcesses(processes) {
 			};
 		})
 	}], function (answer) {
-		fkill(answer.processes, function (err) {
-			if (err) {
-				console.error(err.message);
-				process.exit(1);
-			}
-
-			init();
-		});
-	});
-}
-
-function init() {
-	psList({all: false}, function (err, processes) {
-		if (err) {
-			console.error(err.message);
-			process.exit(1);
-		}
-
-		escExit();
-		listProcesses(processes);
+		fkill(answer.processes).then(init);
 	});
 }
 
 if (cli.input.length === 0) {
 	init();
-	return;
+} else {
+	fkill(cli.input, cli.flags);
 }
-
-fkill(cli.input, cli.flags, function (err) {
-	if (err) {
-		console.error(err.message);
-		process.exit(1);
-	}
-});

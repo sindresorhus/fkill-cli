@@ -42,11 +42,11 @@
   "dependencies": {
     "chalk": "^1.1.0",
     "esc-exit": "^1.0.0",
-    "fkill": "^2.0.1",
+    "fkill": "^3.0.0",
     "inquirer": "^0.10.1",
     "meow": "^3.3.0",
     "num-sort": "^1.0.0",
-    "ps-list": "^2.1.0"
+    "ps-list": "^3.0.0"
   },
   "devDependencies": {
     "ava": "*"
