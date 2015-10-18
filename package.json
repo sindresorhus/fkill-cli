@@ -50,6 +50,10 @@
   },
   "devDependencies": {
     "ava": "*",
+    "pify": "^2.2.0",
     "xo": "*"
+  },
+  "xo": {
+    "esnext": true
   }
 }

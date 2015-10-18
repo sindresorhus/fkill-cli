@@ -1,40 +1,37 @@
 #!/usr/bin/env node
 'use strict';
-var meow = require('meow');
-var fkill = require('fkill');
-var chalk = require('chalk');
-var inquirer = require('inquirer');
-var psList = require('ps-list');
-var numSort = require('num-sort');
-var escExit = require('esc-exit');
+const meow = require('meow');
+const fkill = require('fkill');
+const chalk = require('chalk');
+const inquirer = require('inquirer');
+const psList = require('ps-list');
+const numSort = require('num-sort');
+const escExit = require('esc-exit');
 
-var cli = meow({
-	help: [
-		'Usage',
-		'  $ fkill [<pid|name> ...]',
-		'',
-		'Options',
-		'  -f, --force  Force kill',
-		'',
-		'Examples',
-		'  $ fkill 1337',
-		'  $ fkill Safari',
-		'  $ fkill 1337 Safari',
-		'  $ fkill',
-		'',
-		'Run without arguments to use the interactive interface.'
-	]
-}, {
+const cli = meow(`
+	Usage
+	  $ fkill [<pid|name> ...]
+
+	Options
+	  -f, --force  Force kill
+
+	Examples
+	  $ fkill 1337
+	  $ fkill Safari
+	  $ fkill 1337 Safari
+	  $ fkill
+
+	Run without arguments to use the interactive interface.
+`, {
 	alias: {
 		f: 'force'
 	}
 });
 
 function init() {
-	return psList({all: false}).then(function (processes) {
-		escExit();
-		listProcesses(processes);
-	});
+	escExit();
+
+	return psList({all: false}).then(listProcesses);
 }
 
 function listProcesses(processes) {
@@ -42,15 +39,13 @@ function listProcesses(processes) {
 		name: 'processes',
 		message: 'Running processes:',
 		type: 'list',
-		choices: processes.sort(function (a, b) {
-			numSort.asc(a.pid, b.pid);
-		}).map(function (proc) {
-			return {
-				name: proc.name + ' ' + chalk.dim(proc.pid),
+		choices: processes
+			.sort((a, b) => numSort.asc(a.pid, b.pid))
+			.map(proc => ({
+				name: `${proc.name} ${chalk.dim(proc.pid)}`,
 				value: proc.pid
-			};
-		})
-	}], function (answer) {
+			}))
+	}], answer => {
 		fkill(answer.processes).then(init);
 	});
 }
