@@ -50,7 +50,7 @@ function listProcesses(processes) {
 function filterProcesses(input, processes) {
 	return new Promise(resolve => {
 		resolve(processes
-			.filter(proc => input ? proc.name.includes(input.toLowerCase()) : true)
+			.filter(proc => input ? proc.name.toLowerCase().includes(input.toLowerCase()) : true)
 			.sort((a, b) => numSort.asc(a.pid, b.pid))
 			.map(proc => ({
 				name: `${proc.name} ${chalk.dim(proc.pid)}`,
