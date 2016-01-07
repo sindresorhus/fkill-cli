@@ -35,18 +35,28 @@ function init() {
 }
 
 function listProcesses(processes) {
+	inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
+
 	inquirer.prompt([{
 		name: 'processes',
 		message: 'Running processes:',
-		type: 'list',
-		choices: processes
+		type: 'autocomplete',
+		source: (answers, input) => filterProcesses(input, processes)
+	}], answer => {
+		fkill(answer.processes).then(init);
+	});
+}
+
+function filterProcesses(input, processes) {
+	return new Promise(resolve => {
+		resolve(processes
+			.filter(proc => input ? proc.name.includes(input.toLowerCase()) : true)
 			.sort((a, b) => numSort.asc(a.pid, b.pid))
 			.map(proc => ({
 				name: `${proc.name} ${chalk.dim(proc.pid)}`,
 				value: proc.pid
 			}))
-	}], answer => {
-		fkill(answer.processes).then(init);
+		);
 	});
 }
 
