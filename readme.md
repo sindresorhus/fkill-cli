@@ -10,7 +10,7 @@
 
 [![Build Status](https://travis-ci.org/sindresorhus/fkill-cli.svg?branch=master)](https://travis-ci.org/sindresorhus/fkill-cli)
 
-Works on OS X, Linux, Windows.
+Works on macOS, Linux, Windows.
 
 
 ## Install
