@@ -35,7 +35,6 @@
     "exit",
     "zap",
     "die",
-    "force",
     "ps",
     "proc"
   ],
@@ -51,10 +50,7 @@
   },
   "devDependencies": {
     "ava": "*",
-    "execa": "^0.4.0",
+    "execa": "^0.6.0",
     "xo": "*"
-  },
-  "xo": {
-    "esnext": true
   }
 }
