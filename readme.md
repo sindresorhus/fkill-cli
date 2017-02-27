@@ -36,11 +36,14 @@ $ fkill --help
     $ fkill Safari
     $ fkill 1337 Safari
     $ fkill
-
-  Run without arguments to use the interactive interface.
 ```
 
-<img width="321" src="screenshot.png">
+
+## Interactive UI
+
+Run `fkill` without arguments to launch the interactive UI.
+
+![](screenshot.gif)
 
 
 ## Related
