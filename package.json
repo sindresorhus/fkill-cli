@@ -1,6 +1,6 @@
 {
   "name": "fkill-cli",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "Fabulously kill processes. Cross-platform.",
   "license": "MIT",
   "repository": "sindresorhus/fkill-cli",
