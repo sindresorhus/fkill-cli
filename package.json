@@ -43,8 +43,8 @@
     "chalk": "^1.1.0",
     "esc-exit": "^1.0.0",
     "fkill": "^4.0.0",
-    "inquirer": "^0.9.0",
-    "inquirer-autocomplete-prompt": "^0.1.3",
+    "inquirer": "^3.0.3",
+    "inquirer-autocomplete-prompt": "^0.7.0",
     "meow": "^3.3.0",
     "num-sort": "^1.0.0",
     "ps-list": "^3.0.0"
