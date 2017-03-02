@@ -14,6 +14,7 @@ const cli = meow(`
 
 	Options
 	  -f, --force  Force kill
+	  -v, --verbose Include arguments in process search
 
 	Examples
 	  $ fkill 1337
@@ -24,41 +25,47 @@ const cli = meow(`
 	Run without arguments to use the interactive interface.
 `, {
 	alias: {
-		f: 'force'
+		f: 'force',
+		v: 'verbose'
 	}
 });
 
-function init() {
+function init(flags) {
 	escExit();
 
-	return psList({all: false}).then(listProcesses);
+	return psList({all: false}).then((procs) => listProcesses(procs, flags));
 }
 
-function listProcesses(processes) {
+function listProcesses(processes, flags) {
 	inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
+	const verbose = flags.verbose || false;
 
 	return inquirer.prompt([{
 		name: 'processes',
 		message: 'Running processes:',
 		type: 'autocomplete',
-		source: (answers, input) => Promise.resolve().then(() => filterProcesses(input, processes))
+		source: (answers, input) => Promise.resolve().then(() => filterProcesses(input, processes, verbose))
 	}])
 		.then(answer => fkill(answer.processes))
 		.then(init);
 }
 
-function filterProcesses(input, processes) {
+function filterProcesses(input, processes, verbose) {
+	const filters = {
+		name: proc => input ? proc.name.toLowerCase().includes(input.toLowerCase()) : true,
+		verbose: proc => input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true,
+	};
 	return processes
-		.filter(proc => input ? proc.name.toLowerCase().includes(input.toLowerCase()) : true)
+		.filter(verbose ? filters.verbose : filters.name)
 		.sort((a, b) => numSort.asc(a.pid, b.pid))
 		.map(proc => ({
-			name: `${proc.name} ${chalk.dim(proc.pid)}`,
+			name: `${verbose ? proc.cmd : proc.name} ${chalk.dim(proc.pid)}`,
 			value: proc.pid
 		}));
 }
 
 if (cli.input.length === 0) {
-	init();
+	init(cli.flags);
 } else {
 	fkill(cli.input, cli.flags);
 }

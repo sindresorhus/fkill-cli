@@ -30,12 +30,14 @@ $ fkill --help
 
   Options
     -f, --force  Force kill
+    -v, --verbose Include arguments in process search 
 
   Examples
     $ fkill 1337
     $ fkill Safari
     $ fkill 1337 Safari
     $ fkill
+    $ fkill -v
 ```
 
 
