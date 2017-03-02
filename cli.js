@@ -33,7 +33,7 @@ const cli = meow(`
 function init(flags) {
 	escExit();
 
-	return psList({all: false}).then((procs) => listProcesses(procs, flags));
+	return psList({all: false}).then(procs => listProcesses(procs, flags));
 }
 
 function listProcesses(processes, flags) {
@@ -53,7 +53,7 @@ function listProcesses(processes, flags) {
 function filterProcesses(input, processes, verbose) {
 	const filters = {
 		name: proc => input ? proc.name.toLowerCase().includes(input.toLowerCase()) : true,
-		verbose: proc => input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true,
+		verbose: proc => input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true
 	};
 	return processes
 		.filter(verbose ? filters.verbose : filters.name)
