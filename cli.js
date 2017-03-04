@@ -41,6 +41,7 @@ function listProcesses(processes) {
 		name: 'processes',
 		message: 'Running processes:',
 		type: 'autocomplete',
+		pageSize: 10,
 		source: (answers, input) => Promise.resolve().then(() => filterProcesses(input, processes))
 	}])
 		.then(answer => fkill(answer.processes))
