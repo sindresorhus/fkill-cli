@@ -44,8 +44,7 @@ function listProcesses(processes) {
 		pageSize: 10,
 		source: (answers, input) => Promise.resolve().then(() => filterProcesses(input, processes))
 	}])
-		.then(answer => fkill(answer.processes))
-		.then(init);
+		.then(answer => fkill(answer.processes));
 }
 
 function filterProcesses(input, processes) {
