@@ -57,10 +57,20 @@ function filterProcesses(input, processes, flags) {
 	return processes
 		.filter(flags.verbose ? filters.verbose : filters.name)
 		.sort((a, b) => numSort.asc(a.pid, b.pid))
-		.map(proc => ({
-			name: `${verbose ? proc.cmd : proc.name} ${chalk.dim(proc.pid)}`,
-			value: proc.pid
-		}));
+		.map(proc => {
+			const lineLength = process.stdout.columns || 80;
+			const margins = 4 + proc.pid.toString().length;
+			const name = truncateText(flags.verbose ? proc.cmd : proc.name, lineLength - margins);
+			return { name: `${name} ${chalk.dim(proc.pid)}`, pid: proc.pid };
+		});
+}
+
+function truncateText(text, lineLength) {
+	if (text.length <= lineLength) return text;
+	const textLength = lineLength - 3;
+	const front = Math.ceil(textLength / 2);
+	const back = Math.floor(textLength / 2);
+	return `${text.substr(0, front)}...${text.substr(text.length - back)}`;
 }
 
 if (cli.input.length === 0) {
