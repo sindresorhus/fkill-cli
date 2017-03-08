@@ -38,25 +38,24 @@ function init(flags) {
 
 function listProcesses(processes, flags) {
 	inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
-	const verbose = flags.verbose || false;
 
 	return inquirer.prompt([{
 		name: 'processes',
 		message: 'Running processes:',
 		type: 'autocomplete',
-		source: (answers, input) => Promise.resolve().then(() => filterProcesses(input, processes, verbose))
+		source: (answers, input) => Promise.resolve().then(() => filterProcesses(input, processes, flags))
 	}])
 		.then(answer => fkill(answer.processes))
 		.then(init);
 }
 
-function filterProcesses(input, processes, verbose) {
+function filterProcesses(input, processes, flags) {
 	const filters = {
 		name: proc => input ? proc.name.toLowerCase().includes(input.toLowerCase()) : true,
 		verbose: proc => input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true
 	};
 	return processes
-		.filter(verbose ? filters.verbose : filters.name)
+		.filter(flags.verbose ? filters.verbose : filters.name)
 		.sort((a, b) => numSort.asc(a.pid, b.pid))
 		.map(proc => ({
 			name: `${verbose ? proc.cmd : proc.name} ${chalk.dim(proc.pid)}`,
