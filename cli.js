@@ -13,8 +13,8 @@ const cli = meow(`
 	  $ fkill [<pid|name> ...]
 
 	Options
-	  -f, --force  Force kill
-	  -v, --verbose Include arguments in process search
+	  -f, --force    Force kill
+	  -v, --verbose  Show process arguments
 
 	Examples
 	  $ fkill 1337
