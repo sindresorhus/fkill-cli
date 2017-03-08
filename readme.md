@@ -29,8 +29,8 @@ $ fkill --help
     $ fkill [<pid|name> ...]
 
   Options
-    -f, --force  Force kill
-    -v, --verbose Include arguments in process search 
+    -f, --force    Force kill
+    -v, --verbose  Include arguments in process search 
 
   Examples
     $ fkill 1337
