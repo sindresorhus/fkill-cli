@@ -64,7 +64,7 @@ function filterProcesses(input, processes, flags) {
 			const lineLength = process.stdout.columns || 80;
 			const margins = commandLineMargins + proc.pid.toString().length;
 			const length = lineLength - margins;
-			const name = cliTruncate(flags.verbose ? proc.cmd : proc.name, length, { position: 'middle' });
+			const name = cliTruncate(flags.verbose ? proc.cmd : proc.name, length, {position: 'middle'});
 			return {
 				name: `${name} ${chalk.dim(proc.pid)}`,
 				pid: proc.pid
