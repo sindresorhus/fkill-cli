@@ -31,6 +31,8 @@ const cli = meow(`
 	}
 });
 
+const commandLineMargins = 4;
+
 function init(flags) {
 	escExit();
 
@@ -60,7 +62,7 @@ function filterProcesses(input, processes, flags) {
 		.sort((a, b) => numSort.asc(a.pid, b.pid))
 		.map(proc => {
 			const lineLength = process.stdout.columns || 80;
-			const margins = 4 + proc.pid.toString().length;
+			const margins = commandLineMargins + proc.pid.toString().length;
 			const length = lineLength - margins;
 			const name = cliTruncate(flags.verbose ? proc.cmd : proc.name, length, { position: 'middle' });
 			return { name: `${name} ${chalk.dim(proc.pid)}`, pid: proc.pid };
