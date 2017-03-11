@@ -40,6 +40,7 @@
   ],
   "dependencies": {
     "chalk": "^1.1.0",
+    "cli-truncate": "^1.0.0",
     "esc-exit": "^1.0.0",
     "fkill": "^4.0.0",
     "inquirer": "^3.0.3",

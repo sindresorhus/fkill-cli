@@ -7,13 +7,15 @@ const inquirer = require('inquirer');
 const psList = require('ps-list');
 const numSort = require('num-sort');
 const escExit = require('esc-exit');
+const cliTruncate = require('cli-truncate');
 
 const cli = meow(`
 	Usage
 	  $ fkill [<pid|name> ...]
 
 	Options
-	  -f, --force  Force kill
+	  -f, --force    Force kill
+	  -v, --verbose  Show process arguments
 
 	Examples
 	  $ fkill 1337
@@ -24,17 +26,20 @@ const cli = meow(`
 	Run without arguments to use the interactive interface.
 `, {
 	alias: {
-		f: 'force'
+		f: 'force',
+		v: 'verbose'
 	}
 });
 
-function init() {
+const commandLineMargins = 4;
+
+function init(flags) {
 	escExit();
 
-	return psList({all: false}).then(listProcesses);
+	return psList({all: false}).then(procs => listProcesses(procs, flags));
 }
 
-function listProcesses(processes) {
+function listProcesses(processes, flags) {
 	inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
 
 	return inquirer.prompt([{
@@ -42,23 +47,33 @@ function listProcesses(processes) {
 		message: 'Running processes:',
 		type: 'autocomplete',
 		pageSize: 10,
-		source: (answers, input) => Promise.resolve().then(() => filterProcesses(input, processes))
+		source: (answers, input) => Promise.resolve().then(() => filterProcesses(input, processes, flags))
 	}])
 		.then(answer => fkill(answer.processes));
 }
 
-function filterProcesses(input, processes) {
+function filterProcesses(input, processes, flags) {
+	const filters = {
+		name: proc => input ? proc.name.toLowerCase().includes(input.toLowerCase()) : true,
+		verbose: proc => input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true
+	};
 	return processes
-		.filter(proc => input ? proc.name.toLowerCase().includes(input.toLowerCase()) : true)
+		.filter(flags.verbose ? filters.verbose : filters.name)
 		.sort((a, b) => numSort.asc(a.pid, b.pid))
-		.map(proc => ({
-			name: `${proc.name} ${chalk.dim(proc.pid)}`,
-			value: proc.pid
-		}));
+		.map(proc => {
+			const lineLength = process.stdout.columns || 80;
+			const margins = commandLineMargins + proc.pid.toString().length;
+			const length = lineLength - margins;
+			const name = cliTruncate(flags.verbose ? proc.cmd : proc.name, length, {position: 'middle'});
+			return {
+				name: `${name} ${chalk.dim(proc.pid)}`,
+				pid: proc.pid
+			};
+		});
 }
 
 if (cli.input.length === 0) {
-	init();
+	init(cli.flags);
 } else {
 	fkill(cli.input, cli.flags);
 }
