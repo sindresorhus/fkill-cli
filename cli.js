@@ -58,6 +58,7 @@ function filterProcesses(input, processes, flags) {
 		verbose: proc => input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true
 	};
 	return processes
+		.filter(proc => !proc.name.endsWith(' Helper'))
 		.filter(flags.verbose ? filters.verbose : filters.name)
 		.sort((a, b) => numSort.asc(a.pid, b.pid))
 		.map(proc => {
