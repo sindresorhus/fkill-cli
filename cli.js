@@ -49,7 +49,7 @@ function listProcesses(processes, flags) {
 		pageSize: 10,
 		source: (answers, input) => Promise.resolve().then(() => filterProcesses(input, processes, flags))
 	}])
-		.then(answer => fkill(answer.processes));
+		.then(answer => fkill(answer.processes).catch(err => handleFkillError(answer.processes, err)));
 }
 
 function filterProcesses(input, processes, flags) {
@@ -73,8 +73,20 @@ function filterProcesses(input, processes, flags) {
 		});
 }
 
+function handleFkillError(proc, err) {
+	inquirer.prompt([{
+		type: 'confirm',
+		name: 'forceKill',
+		message: 'Error killing process. Would you like to use the force?'
+	}]).then(answer => {
+		if (answer.forceKill === true) {
+			return fkill(proc, {force: true});
+		}
+	});
+}
+
 if (cli.input.length === 0) {
 	init(cli.flags);
 } else {
-	fkill(cli.input, cli.flags);
+	fkill(cli.input, cli.flags).catch(err => handleFkillError(cli.input, err));
 }
