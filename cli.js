@@ -74,13 +74,14 @@ function filterProcesses(input, processes, flags) {
 }
 
 function handleFkillError(processes) {
+	const suffix = processes.length > 1 ? 'es' : '';
 	if (process.stdout.isTTY === false) {
-		console.log(`Error killing process. Try \`fkill --force ${processes}\``);
+		console.log(`Error killing process${suffix}. Try \`fkill --force ${processes.join(' ')}\``);
 	} else {
 		return inquirer.prompt([{
 			type: 'confirm',
 			name: 'forceKill',
-			message: 'Error killing process. Would you like to use the force?'
+			message: `Error killing process${suffix}. Would you like to use the force?`
 		}]).then(answer => {
 			if (answer.forceKill === true) {
 				return fkill(processes, {force: true});
