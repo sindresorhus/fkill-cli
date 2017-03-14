@@ -74,15 +74,19 @@ function filterProcesses(input, processes, flags) {
 }
 
 function handleFkillError(processes) {
-	return inquirer.prompt([{
-		type: 'confirm',
-		name: 'forceKill',
-		message: 'Error killing process. Would you like to use the force?'
-	}]).then(answer => {
-		if (answer.forceKill === true) {
-			return fkill(processes, {force: true});
-		}
-	});
+	if (process.stdout.isTTY === false) {
+		console.log(`Error killing process. Try \`fkill --force ${processes}\``);
+	} else {
+		return inquirer.prompt([{
+			type: 'confirm',
+			name: 'forceKill',
+			message: 'Error killing process. Would you like to use the force?'
+		}]).then(answer => {
+			if (answer.forceKill === true) {
+				return fkill(processes, {force: true});
+			}
+		});
+	}
 }
 
 if (cli.input.length === 0) {
