@@ -54,6 +54,12 @@ Run `fkill` without arguments to launch the interactive UI.
 - [alfred-fkill](https://github.com/SamVerschueren/alfred-fkill) - Alfred workflow for this module
 
 
+## Created by
+
+- [Sindre Sorhus](https://sindresorhus.com)
+- [Daniel Baker](https://github.com/coffeedoughnuts)
+
+
 ## License
 
 MIT © [Sindre Sorhus](https://sindresorhus.com)
