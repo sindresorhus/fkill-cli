@@ -57,6 +57,7 @@ function filterProcesses(input, processes, flags) {
 		name: proc => input ? proc.name.toLowerCase().includes(input.toLowerCase()) : true,
 		verbose: proc => input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true
 	};
+
 	return processes
 		.filter(proc => !proc.name.endsWith(' Helper'))
 		.filter(flags.verbose ? filters.verbose : filters.name)
@@ -66,6 +67,7 @@ function filterProcesses(input, processes, flags) {
 			const margins = commandLineMargins + proc.pid.toString().length;
 			const length = lineLength - margins;
 			const name = cliTruncate(flags.verbose ? proc.cmd : proc.name, length, {position: 'middle'});
+
 			return {
 				name: `${name} ${chalk.dim(proc.pid)}`,
 				value: proc.pid
@@ -75,6 +77,7 @@ function filterProcesses(input, processes, flags) {
 
 function handleFkillError(processes) {
 	const suffix = processes.length > 1 ? 'es' : '';
+
 	if (process.stdout.isTTY === false) {
 		console.log(`Error killing process${suffix}. Try \`fkill --force ${processes.join(' ')}\``);
 	} else {
