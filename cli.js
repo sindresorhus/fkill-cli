@@ -81,7 +81,7 @@ function handleFkillError(processes) {
 		return inquirer.prompt([{
 			type: 'confirm',
 			name: 'forceKill',
-			message: `Error killing process${suffix}. Would you like to use the force?`
+			message: 'Error killing process. Would you like to use the force?'
 		}]).then(answer => {
 			if (answer.forceKill === true) {
 				return fkill(processes, {force: true});
