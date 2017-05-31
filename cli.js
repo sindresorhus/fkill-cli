@@ -8,8 +8,7 @@ const psList = require('ps-list');
 const numSort = require('num-sort');
 const escExit = require('esc-exit');
 const cliTruncate = require('cli-truncate');
-
-const {portToProc} = require('portproc');
+const portToProc = require('portproc').portToProc;
 
 const cli = meow(`
 	Usage
