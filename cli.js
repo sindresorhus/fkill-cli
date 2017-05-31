@@ -100,7 +100,7 @@ if (cli.input.length === 0) {
 } else {
 	let pids = [];
 	const promises = [];
-	for (var i = 0; i < cli.input.length; i++) {
+	for (let i = 0; i < cli.input.length; i++) {
 		if (cli.input[i][0] === ':') {
 			promises.push(portToProc(parseInt(cli.input[i].slice(1), 0)));
 		} else {
