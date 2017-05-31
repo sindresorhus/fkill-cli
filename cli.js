@@ -29,6 +29,8 @@ const cli = meow(`
 		f: 'force',
 		v: 'verbose'
 	}
+}, {
+	boolean: ['force', 'verbose']
 });
 
 const commandLineMargins = 4;
