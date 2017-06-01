@@ -8,6 +8,7 @@ const psList = require('ps-list');
 const numSort = require('num-sort');
 const escExit = require('esc-exit');
 const cliTruncate = require('cli-truncate');
+const portToProc = require('portproc').portToProc;
 
 const cli = meow(`
 	Usage
@@ -100,5 +101,8 @@ function handleFkillError(processes) {
 if (cli.input.length === 0) {
 	init(cli.flags);
 } else {
-	fkill(cli.input, cli.flags).catch(() => handleFkillError(cli.input));
+	Promise.all(cli.input.map(x => x[0] === ':' ? portToProc(parseInt(x.slice(1), 10)) : x))
+				.then(pids => pids.filter(pid => pid))
+				.then(pids => fkill(pids, cli.flags))
+				.catch(() => handleFkillError(cli.input));
 }
