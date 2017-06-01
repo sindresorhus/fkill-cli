@@ -47,7 +47,7 @@
     "inquirer-autocomplete-prompt": "^0.7.0",
     "meow": "^3.3.0",
     "num-sort": "^1.0.0",
-    "portproc": "^1.0.0",
+    "portproc": "^1.0.2",
     "ps-list": "^3.0.0"
   },
   "devDependencies": {
