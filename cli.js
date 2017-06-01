@@ -97,18 +97,8 @@ function handleFkillError(processes) {
 if (cli.input.length === 0) {
 	init(cli.flags);
 } else {
-	let pids = [];
-	const promises = [];
-	for (let i = 0; i < cli.input.length; i++) {
-		if (cli.input[i][0] === ':') {
-			promises.push(portToProc(parseInt(cli.input[i].slice(1), 0)));
-		} else {
-			pids.push(cli.input[i]);
-		}
-	}
-	Promise.all(promises).then(promisedPids => {
-		promisedPids = promisedPids.filter(pid => pid);
-		pids = pids.concat(promisedPids);
-		fkill(pids, cli.flags).catch(() => handleFkillError(cli.input));
-	});
+	Promise.all(cli.input.map(x => x[0] === ':' ? portToProc(parseInt(x.slice(1), 10)) : x))
+				.then(pids => pids.filter(pid => pid))
+				.then(pids => fkill(pids, cli.flags))
+				.catch(() => handleFkillError(cli.input));
 }
