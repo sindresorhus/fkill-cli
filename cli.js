@@ -99,6 +99,8 @@ function handleFkillError(processes) {
 
 if (cli.input.length === 0) {
 	init(cli.flags);
+} else if (cli.flags.force || cli.flags.f) {
+	fkill(cli.input, cli.flags);
 } else {
 	fkill(cli.input, cli.flags).catch(() => handleFkillError(cli.input));
 }
