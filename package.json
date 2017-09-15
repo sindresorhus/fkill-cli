@@ -39,19 +39,19 @@
     "proc"
   ],
   "dependencies": {
-    "chalk": "^1.1.0",
+    "chalk": "^2.1.0",
     "cli-truncate": "^1.0.0",
     "esc-exit": "^1.0.0",
-    "fkill": "^4.0.0",
+    "fkill": "^5.0.0",
     "inquirer": "^3.0.3",
-    "inquirer-autocomplete-prompt": "^0.7.0",
+    "inquirer-autocomplete-prompt": "^0.11.1",
     "meow": "^3.3.0",
     "num-sort": "^1.0.0",
-    "ps-list": "^3.0.0"
+    "ps-list": "^4.0.0"
   },
   "devDependencies": {
     "ava": "*",
-    "execa": "^0.6.0",
+    "execa": "^0.8.0",
     "xo": "*"
   }
 }
