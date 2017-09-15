@@ -1,57 +1,57 @@
 {
-  "name": "fkill-cli",
-  "version": "3.6.0",
-  "description": "Fabulously kill processes. Cross-platform.",
-  "license": "MIT",
-  "repository": "sindresorhus/fkill-cli",
-  "author": {
-    "name": "Sindre Sorhus",
-    "email": "sindresorhus@gmail.com",
-    "url": "sindresorhus.com"
-  },
-  "bin": {
-    "fkill": "cli.js"
-  },
-  "engines": {
-    "node": ">=4"
-  },
-  "scripts": {
-    "test": "xo && ava"
-  },
-  "files": [
-    "cli.js"
-  ],
-  "keywords": [
-    "cli-app",
-    "cli",
-    "fkill",
-    "kill",
-    "killing",
-    "killall",
-    "taskkill",
-    "sigkill",
-    "sigterm",
-    "force",
-    "exit",
-    "zap",
-    "die",
-    "ps",
-    "proc"
-  ],
-  "dependencies": {
-    "chalk": "^2.1.0",
-    "cli-truncate": "^1.0.0",
-    "esc-exit": "^1.0.0",
-    "fkill": "^5.0.0",
-    "inquirer": "^3.0.3",
-    "inquirer-autocomplete-prompt": "^0.11.1",
-    "meow": "^3.3.0",
-    "num-sort": "^1.0.0",
-    "ps-list": "^4.0.0"
-  },
-  "devDependencies": {
-    "ava": "*",
-    "execa": "^0.8.0",
-    "xo": "*"
-  }
+	"name": "fkill-cli",
+	"version": "3.6.0",
+	"description": "Fabulously kill processes. Cross-platform.",
+	"license": "MIT",
+	"repository": "sindresorhus/fkill-cli",
+	"author": {
+		"name": "Sindre Sorhus",
+		"email": "sindresorhus@gmail.com",
+		"url": "sindresorhus.com"
+	},
+	"bin": {
+		"fkill": "cli.js"
+	},
+	"engines": {
+		"node": ">=4"
+	},
+	"scripts": {
+		"test": "xo && ava"
+	},
+	"files": [
+		"cli.js"
+	],
+	"keywords": [
+		"cli-app",
+		"cli",
+		"fkill",
+		"kill",
+		"killing",
+		"killall",
+		"taskkill",
+		"sigkill",
+		"sigterm",
+		"force",
+		"exit",
+		"zap",
+		"die",
+		"ps",
+		"proc"
+	],
+	"dependencies": {
+		"chalk": "^2.1.0",
+		"cli-truncate": "^1.0.0",
+		"esc-exit": "^1.0.0",
+		"fkill": "^5.0.0",
+		"inquirer": "^3.0.3",
+		"inquirer-autocomplete-prompt": "^0.11.1",
+		"meow": "^3.3.0",
+		"num-sort": "^1.0.0",
+		"ps-list": "^4.0.0"
+	},
+	"devDependencies": {
+		"ava": "*",
+		"execa": "^0.8.0",
+		"xo": "*"
+	}
 }

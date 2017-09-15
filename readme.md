@@ -30,7 +30,7 @@ $ fkill --help
 
   Options
     -f, --force    Force kill
-    -v, --verbose  Include arguments in process search 
+    -v, --verbose  Include arguments in process search
 
   Examples
     $ fkill 1337
