@@ -26,18 +26,20 @@ $ npm install --global fkill-cli
 $ fkill --help
 
   Usage
-    $ fkill [<pid|name> ...]
+    $ fkill [<pid|name> …]
 
   Options
-    -f, --force    Force kill
-    -v, --verbose  Include arguments in process search
+    --force -f    Force kill
+    --verbose -v  Show process arguments
 
   Examples
     $ fkill 1337
-    $ fkill Safari
-    $ fkill 1337 Safari
+    $ fkill safari
+    $ fkill 1337 safari
     $ fkill
-    $ fkill -v
+
+  Run without arguments to use the interactive interface.
+  The process name is case insensitive.
 ```
 
 

@@ -11,19 +11,20 @@ const cliTruncate = require('cli-truncate');
 
 const cli = meow(`
 	Usage
-	  $ fkill [<pid|name> ...]
+	  $ fkill [<pid|name> …]
 
 	Options
-	  -f, --force    Force kill
-	  -v, --verbose  Show process arguments
+	  --force -f    Force kill
+	  --verbose -v  Show process arguments
 
 	Examples
 	  $ fkill 1337
-	  $ fkill Safari
-	  $ fkill 1337 Safari
+	  $ fkill safari
+	  $ fkill 1337 safari
 	  $ fkill
 
 	Run without arguments to use the interactive interface.
+	The process name is case insensitive.
 `, {
 	alias: {
 		f: 'force',
@@ -91,7 +92,10 @@ function handleFkillError(processes) {
 			message: 'Error killing process. Would you like to use the force?'
 		}]).then(answer => {
 			if (answer.forceKill === true) {
-				return fkill(processes, {force: true});
+				return fkill(processes, {
+					force: true,
+					ignoreCase: true
+				});
 			}
 		});
 	}
@@ -100,7 +104,7 @@ function handleFkillError(processes) {
 if (cli.input.length === 0) {
 	init(cli.flags);
 } else {
-	const promise = fkill(cli.input, cli.flags);
+	const promise = fkill(cli.input, Object.assign(cli.flags, {ignoreCase: true}));
 
 	if (!cli.flags.force) {
 		promise.catch(() => handleFkillError(cli.input));

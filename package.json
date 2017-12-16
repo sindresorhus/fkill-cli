@@ -42,7 +42,7 @@
 		"chalk": "^2.1.0",
 		"cli-truncate": "^1.0.0",
 		"esc-exit": "^1.0.0",
-		"fkill": "^5.0.0",
+		"fkill": "^5.2.0",
 		"inquirer": "^3.0.3",
 		"inquirer-autocomplete-prompt": "^0.11.1",
 		"meow": "^3.3.0",
