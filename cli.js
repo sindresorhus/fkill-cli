@@ -66,7 +66,11 @@ function filterProcesses(input, processes, flags) {
 	};
 
 	return processes
-		.filter(proc => !proc.name.endsWith(' Helper'))
+		.filter(proc => !(
+			proc.name.endsWith('-helper') ||
+			proc.name.endsWith('Helper') ||
+			proc.name.endsWith('HelperApp')
+		))
 		.filter(flags.verbose ? filters.verbose : filters.name)
 		.sort((a, b) => numSort.asc(a.pid, b.pid))
 		.map(proc => {
