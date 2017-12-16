@@ -26,14 +26,16 @@ const cli = meow(`
 	Run without arguments to use the interactive interface.
 	The process name is case insensitive.
 `, {
-	alias: {
-		f: 'force',
-		v: 'verbose'
-	},
-	boolean: [
-		'force',
-		'verbose'
-	]
+	flags: {
+		force: {
+			type: 'boolean',
+			alias: 'f'
+		},
+		verbose: {
+			type: 'boolean',
+			alias: 'v'
+		}
+	}
 });
 
 const commandLineMargins = 4;
