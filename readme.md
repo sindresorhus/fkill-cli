@@ -31,7 +31,8 @@ $ fkill --help
   Options
     --force -f    Force kill
     --verbose -v  Show process arguments
-
+    --silent -s   Silently kill process
+  
   Examples
     $ fkill 1337
     $ fkill safari
