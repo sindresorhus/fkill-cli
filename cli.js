@@ -16,6 +16,7 @@ const cli = meow(`
 	Options
 	  --force -f    Force kill
 	  --verbose -v  Show process arguments
+	  --silent -s   Silently kill process
 
 	Examples
 	  $ fkill 1337
@@ -34,6 +35,10 @@ const cli = meow(`
 		verbose: {
 			type: 'boolean',
 			alias: 'v'
+		},
+		silent: {
+			type: 'boolean',
+			alias: 's'
 		}
 	}
 });
@@ -113,6 +118,9 @@ if (cli.input.length === 0) {
 	const promise = fkill(cli.input, Object.assign(cli.flags, {ignoreCase: true}));
 
 	if (!cli.flags.force) {
-		promise.catch(() => handleFkillError(cli.input));
+		promise.catch(() => {
+			if(!cli.flags.silent)
+				handleFkillError(cli.input)
+		});
 	}
 }
