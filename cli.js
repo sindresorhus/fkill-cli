@@ -119,8 +119,9 @@ if (cli.input.length === 0) {
 
 	if (!cli.flags.force) {
 		promise.catch(() => {
-			if(!cli.flags.silent)
-				handleFkillError(cli.input)
+			if (!cli.flags.silent) {
+				handleFkillError(cli.input);
+			}
 		});
 	}
 }
