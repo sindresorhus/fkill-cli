@@ -35,8 +35,11 @@ $ fkill --help
   Examples
     $ fkill 1337
     $ fkill safari
-    $ fkill 1337 safari
+    $ fkill :8080
+    $ fkill 1337 safari :8080
     $ fkill
+
+  To kill a port, prefix it with a colon. For example: :8080.
 
   Run without arguments to use the interactive interface.
   The process name is case insensitive.
