@@ -8,10 +8,11 @@ const psList = require('ps-list');
 const numSort = require('num-sort');
 const escExit = require('esc-exit');
 const cliTruncate = require('cli-truncate');
+const pidFromPort = require('pid-from-port');
 
 const cli = meow(`
 	Usage
-	  $ fkill [<pid|name> …]
+	  $ fkill [<pid|name|:port> …]
 
 	Options
 	  --force -f    Force kill
@@ -20,8 +21,11 @@ const cli = meow(`
 	Examples
 	  $ fkill 1337
 	  $ fkill safari
-	  $ fkill 1337 safari
+	  $ fkill :8080
+	  $ fkill 1337 safari :8080
 	  $ fkill
+
+	To kill a port, prefix it with a colon. For example: :8080.
 
 	Run without arguments to use the interactive interface.
 	The process name is case insensitive.
@@ -43,7 +47,20 @@ const commandLineMargins = 4;
 function init(flags) {
 	escExit();
 
-	return psList({all: false}).then(procs => listProcesses(procs, flags));
+	const getPortFromPid = (val, list) => {
+		for (const x of list.entries()) {
+			if (val === x[1]) {
+				return String(x[0]);
+			}
+		}
+
+		return '';
+	};
+
+	return pidFromPort.list()
+		.then(ports => Promise.all([ports, psList({all: false})]))
+		.then(res => res[1].map(x => Object.assign(x, {port: getPortFromPid(x.pid, res[0])})))
+		.then(procs => listProcesses(procs, flags));
 }
 
 function listProcesses(processes, flags) {
@@ -59,9 +76,17 @@ function listProcesses(processes, flags) {
 		.then(answer => fkill(answer.processes).catch(() => handleFkillError(answer.processes)));
 }
 
+function nameFilter(input, proc) {
+	const isPort = input[0] === ':';
+	const field = isPort ? proc.port : proc.name;
+	const keyword = isPort ? input.slice(1) : input;
+
+	return field.toLowerCase().includes(keyword.toLowerCase());
+}
+
 function filterProcesses(input, processes, flags) {
 	const filters = {
-		name: proc => input ? proc.name.toLowerCase().includes(input.toLowerCase()) : true,
+		name: proc => input ? nameFilter(input, proc) : true,
 		verbose: proc => input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true
 	};
 
@@ -78,9 +103,10 @@ function filterProcesses(input, processes, flags) {
 			const margins = commandLineMargins + proc.pid.toString().length;
 			const length = lineLength - margins;
 			const name = cliTruncate(flags.verbose ? proc.cmd : proc.name, length, {position: 'middle'});
+			const port = proc.port && `:${proc.port}`;
 
 			return {
-				name: `${name} ${chalk.dim(proc.pid)}`,
+				name: `${name} ${chalk.dim(proc.pid)} ${chalk.dim.magenta(port)}`,
 				value: proc.pid
 			};
 		});
@@ -113,6 +139,13 @@ if (cli.input.length === 0) {
 	const promise = fkill(cli.input, Object.assign(cli.flags, {ignoreCase: true}));
 
 	if (!cli.flags.force) {
-		promise.catch(() => handleFkillError(cli.input));
+		promise.catch(err => {
+			if (/Couldn't find a process with port/.test(err.message)) {
+				console.error(err.message);
+				process.exit(1);
+			}
+
+			return handleFkillError(cli.input);
+		});
 	}
 }
