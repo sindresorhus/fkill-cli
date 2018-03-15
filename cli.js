@@ -139,6 +139,13 @@ if (cli.input.length === 0) {
 	const promise = fkill(cli.input, Object.assign(cli.flags, {ignoreCase: true}));
 
 	if (!cli.flags.force) {
-		promise.catch(() => handleFkillError(cli.input));
+		promise.catch(err => {
+			if (/Couldn't find a process with port/.test(err.message)) {
+				console.error(err.message);
+				process.exit(1);
+			}
+
+			return handleFkillError(cli.input);
+		});
 	}
 }
