@@ -40,7 +40,6 @@
 	],
 	"dependencies": {
 		"auto-bind": "^1.2.0",
-		"chalk": "^2.1.0",
 		"cli-truncate": "^1.0.0",
 		"esc-exit": "^1.0.0",
 		"figures": "^2.0.0",
@@ -50,17 +49,31 @@
 		"ink-autocomplete": "^0.0.0",
 		"ink-confirm-input": "^1.0.3",
 		"ink-text-input": "^1.1.1",
-		"inquirer": "^3.0.3",
-		"inquirer-autocomplete-prompt": "^0.12.1",
 		"lodash.isequal": "^4.5.0",
 		"meow": "^4.0.0",
 		"num-sort": "^1.0.0",
 		"pid-from-port": "^1.1.1",
+		"prop-types": "^15.6.1",
 		"ps-list": "^4.0.0"
 	},
 	"devDependencies": {
 		"ava": "*",
+		"eslint-config-xo-react": "^0.16.0",
+		"eslint-plugin-react": "^7.7.0",
 		"execa": "^0.8.0",
 		"xo": "*"
+	},
+	"xo": {
+		"extends": [
+			"xo-react"
+		],
+		"rules": {
+			"react/prop-types": 0
+		},
+		"settings": {
+			"react": {
+				"pragma": "h"
+			}
+		}
 	}
 }
