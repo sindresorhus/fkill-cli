@@ -18,9 +18,7 @@
 	"scripts": {
 		"test": "xo && ava"
 	},
-	"files": [
-		"cli.js"
-	],
+	"files": ["cli.js"],
 	"keywords": [
 		"cli-app",
 		"cli",
@@ -64,9 +62,7 @@
 		"xo": "*"
 	},
 	"xo": {
-		"extends": [
-			"xo-react"
-		],
+		"extends": ["xo-react"],
 		"rules": {
 			"react/prop-types": 0
 		},
@@ -74,6 +70,7 @@
 			"react": {
 				"pragma": "h"
 			}
-		}
+		},
+		"ignores": ["temp-component.js"]
 	}
 }

@@ -40,9 +40,16 @@ class FkillUI extends Component {
 		super(props);
 		autoBind(this);
 		escExit();
+		let status = DEFAULT;
+		if (props.error) {
+			status = ERROR;
+		}
+		if (props.selected) {
+			status = CONFIRM;
+		}
 		this.state = {
 			flags: props.flags,
-			status: !props.error ? (!props.selected ? DEFAULT : CONFIRM) : ERROR,
+			status,
 			list: props.list.map(item => ({
 				...item,
 				label: `${item.name}  pid:${item.pid}`,
@@ -160,7 +167,7 @@ class FkillUI extends Component {
 		if (status === ERROR) {
 			// Error
 			const error = errMsg ? errMsg : this.props.error;
-			return <ErrorMessage msg={error} />;
+			return <ErrorMessage msg={error}/>;
 		}
 
 		if (status === CONFIRM) {
@@ -179,10 +186,10 @@ class FkillUI extends Component {
 
 		return (
 			<div>
-				<Text>{'Running processes: '}</Text>
+				<Text>Running processes:</Text>
 				<AutoComplete
 					value={searching}
-					placeholder={'Type a process'}
+					placeholder="Type a process"
 					items={list}
 					onChange={this.handleChange}
 					onSubmit={this.handleSubmit}
@@ -196,14 +203,15 @@ class FkillUI extends Component {
 }
 
 FkillUI.defaultProps = {
-	list: []
+	list: [],
+	selected: null
 };
 
 FkillUI.propTypes = {
 	list: PropTypes.array,
-	flags: PropTypes.object,
-	selectd: PropTypes.object,
-	onExit: PropTypes.func
+	flags: PropTypes.object.isRequired,
+	selected: PropTypes.object,
+	onExit: PropTypes.func.isRequired
 };
 
 module.exports = FkillUI;
