@@ -48,6 +48,7 @@
 		"import-jsx": "^1.3.0",
 		"ink": "^0.4.1",
 		"ink-autocomplete": "^0.0.0",
+		"ink-confirm-input": "^1.0.3",
 		"ink-text-input": "^1.1.1",
 		"inquirer": "^3.0.3",
 		"inquirer-autocomplete-prompt": "^0.12.1",

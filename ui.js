@@ -4,18 +4,43 @@ const autoBind = require("auto-bind");
 const escExit = require("esc-exit");
 const pidFromPort = require("pid-from-port");
 const importJsx = require("import-jsx");
-const AutoComplete = importJsx("./temp-component");
 const fkill = require("fkill");
+const ConfirmInput = require("ink-confirm-input");
+const cliTruncate = require("cli-truncate");
+const AutoComplete = importJsx("./temp-component");
 
 // status flag
 const DEFAULT = 1;
+const CONFIRM = 2;
+const SUCCESS = 3;
+const LOADING = 4;
 const ERROR = -1;
+
+const commandLineMargins = 4;
+
+//util
+function nameFilter(input, proc) {
+	const isPort = input[0] === ":";
+	const field = isPort ? proc.port : proc.name;
+	const keyword = isPort ? input.slice(1) : input;
+
+	return field.toLowerCase().includes(keyword.toLowerCase());
+}
 
 //error message
 const ErrorMessage = ({ msg }) => {
 	return (
 		<Text bold red>
 			{msg}
+		</Text>
+	);
+};
+
+//success message
+const SuccessMessage = () => {
+	return (
+		<Text bold green>
+			kill process successfully and auto exit
 		</Text>
 	);
 };
@@ -33,11 +58,11 @@ class FkillUI extends Component {
 				label: `${item.name}  pid:${item.pid}`,
 				value: item.pid
 			})),
-			searching: null
+			searching: null,
+			selectd: props.killProcess,
+			confirmInput: ""
 		};
 	}
-
-	componentDidMount() {}
 
 	handleChange(input) {
 		this.setState({
@@ -46,38 +71,126 @@ class FkillUI extends Component {
 	}
 
 	handleSubmit(selectd) {
+		this.setState({
+			selectd
+		});
 		//  process kill
-		fkill(selectd)
+		fkill(selectd.pid)
 			.then(() => {
-         //successTips
+				process.exit(1);
 			})
-			.catch(() => handleFkillError(selectd));
+			.catch(() => this.handleFkillError(selectd));
 	}
 
-	handleFkillError() {
+	renderItem(proc, flags) {
+		const lineLength = process.stdout.columns || 80;
+		const margins = commandLineMargins + proc.pid.toString().length;
+		const length = lineLength - margins;
+		const name = cliTruncate(flags.verbose ? proc.cmd : proc.name, length, {
+			position: "middle"
+		});
+		const port = proc.port && `:${proc.port}`;
+		return (
+			<Text>
+				{name} <Text dim>{proc.pid}</Text>{" "}
+				<Text dim magenta>
+					{port}
+				</Text>
+			</Text>
+		);
+	}
+
+	handleFkillError(processes) {
 		const suffix = processes.length > 1 ? "es" : "";
 		if (process.stdout.isTTY === false) {
-		    this.setState({
-					errMsg:`Error killing process${suffix}. Try \`fkill --force ${processes.join()}\``
-				})
-		}else{
-			
+			this.setState({
+				errMsg: `Error killing process${suffix}. Try \`fkill --force ${processes.join()}\``
+			});
+		} else {
+			this.setState({
+				status: CONFIRM
+			});
 		}
 	}
 
-	match(str) {
-		const that = this;
-		return function(item) {};
+	itemsMatch(input) {
+		const { flags } = this.state;
+		return function(item) {
+			let result = true;
+			result = !(
+				item.name.endsWith("-helper") ||
+				item.name.endsWith("Helper") ||
+				item.name.endsWith("HelperApp")
+			);
+
+			if (!result) {
+				return result;
+			}
+
+			const filters = {
+				name: proc => (input ? nameFilter(input, proc) : true),
+				verbose: proc =>
+					input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true
+			};
+
+			const filter = flags.verbose ? filters.verbose : filters.name;
+
+			return filter(item);
+		};
+	}
+
+	handleConfirmChange(value) {
+		this.setState({
+			confirmInput: value
+		});
+	}
+
+	handleConfirmSubmit() {
+		const value = this.state.confirmInput;
+		if (value && value.toLowerCase() === "y") {
+			fkill(this.state.selectd.pid, {
+				force: true,
+				ignoreCase: true
+			})
+				.then(() => {
+					process.exit(1);
+				})
+				.catch(err => {
+					this.setState({
+						status: ERROR,
+						errMsg: err.message
+					});
+				});
+		}
 	}
 
 	render() {
 		//
-		const { searching, list, status, errMsg } = this.state;
-		if (status === -1) {
+		const { searching, list, status, errMsg, flags, confirmInput } = this.state;
+		if (status === ERROR) {
 			//error
 			const error = errMsg ? errMsg : props.error;
 			return <ErrorMessage msg={error} />;
 		}
+
+		if (status === SUCCESS) {
+			return <SuccessMessage />;
+		}
+
+		if (status === CONFIRM) {
+			return (
+				<div>
+					Error killing process. Would you like to use the force? (Y/n)
+					<ConfirmInput
+						checked
+						value={confirmInput}
+						onChange={this.handleConfirmChange}
+						onSubmit={this.handleConfirmSubmit}
+					/>
+				</div>
+			);
+		}
+
 		return (
 			<div>
 				<Text>{"Running processes: "}</Text>
@@ -88,6 +201,8 @@ class FkillUI extends Component {
 					onChange={this.handleChange}
 					onSubmit={this.handleSubmit}
 					pageLimit={10}
+					getMatch={this.itemsMatch}
+					itemComponent={items => this.renderItem(items, flags)}
 				/>
 			</div>
 		);
