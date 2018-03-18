@@ -1,16 +1,17 @@
-"use strict";
+'use strict';
 
-const { h, Text, Component } = require("ink");
-const PropTypes = require("prop-types");
-const isEqual = require("lodash.isequal");
-const figures = require("figures");
-const TextInput = require("ink-text-input");
+const {h, Text, Component} = require('ink');
+const PropTypes = require('prop-types');
+const figures = require('figures');
+const TextInput = require('ink-text-input');
+
+// Rewrite auto-complete-input to support paging
 
 const noop = () => {};
 
-const Indicator = ({ isSelected }) => {
+const Indicator = ({isSelected}) => {
 	if (!isSelected) {
-		return " ";
+		return ' ';
 	}
 
 	return <Text blue>{`${figures.pointer} `}</Text>;
@@ -20,7 +21,7 @@ Indicator.propTypes = {
 	isSelected: PropTypes.bool.isRequired
 };
 
-const Item = ({ isSelected, label }) => <Text blue={isSelected}>{label}</Text>;
+const Item = ({isSelected, label}) => <Text blue={isSelected}>{label}</Text>;
 
 Item.propTypes = {
 	isSelected: PropTypes.bool.isRequired,
@@ -41,8 +42,8 @@ class Select extends Component {
 	}
 
 	render(
-		{ items, indicatorComponent, itemComponent, pageLimit },
-		{ selectedIndex, page, startInex, endIndex }
+		{items, indicatorComponent, itemComponent, pageLimit},
+		{selectedIndex, startInex, endIndex}
 	) {
 		const currentItems = !pageLimit ? items : items.slice(startInex, endIndex);
 
@@ -51,40 +52,31 @@ class Select extends Component {
 
 			return (
 				<div key={item.value}>
-					{h(indicatorComponent, { isSelected })}
-					{h(itemComponent, { ...item, isSelected })}
+					{h(indicatorComponent, {isSelected})}
+					{h(itemComponent, {...item, isSelected})}
 				</div>
 			);
 		});
 	}
 
 	componentDidMount() {
-		process.stdin.on("keypress", this.handleKeyPress);
+		process.stdin.on('keypress', this.handleKeyPress);
 	}
 
 	componentWillUnmount() {
-		process.stdin.removeListener("keypress", this.handleKeyPress);
-	}
-
-	componentWillReceiveProps(nextProps) {
-		// if (!isEqual(this.props.items, nextProps.items) && this.state.pageLimit) {
-		// 	this.setState({
-		// 		selectedIndex: 0
-		// 	});
-		// }
+		process.stdin.removeListener('keypress', this.handleKeyPress);
 	}
 
 	handleKeyPress(ch, key) {
-		const { items, focus, onSelect, pageLimit } = this.props;
-		const { selectedIndex, page } = this.state;
+		const {items, focus, onSelect, pageLimit} = this.props;
+		const {selectedIndex} = this.state;
 		const length = items.length;
 
 		if (focus === false) {
 			return;
 		}
 
-		if (key.name === "up" || key.name === "k") {
-			const lastIndex = length - 1;
+		if (key.name === 'up' || key.name === 'k') {
 			const prevIndex = selectedIndex - 1;
 			const newState = {
 				selectedIndex: prevIndex
@@ -92,7 +84,7 @@ class Select extends Component {
 
 			if (pageLimit) {
 				if (this.state.startInex - 1 % pageLimit === 0) {
-					//prevPage
+					// PrevPage
 					newState.startInex = this.state.startInex - 1;
 					newState.endIndex = this.state.endIndex - 1;
 					newState.selectedIndex = selectedIndex;
@@ -104,14 +96,14 @@ class Select extends Component {
 			this.setState(newState);
 		}
 
-		if (key.name === "down" || key.name === "j") {
+		if (key.name === 'down' || key.name === 'j') {
 			const nextIndex = selectedIndex + 1;
 			const newState = {
 				selectedIndex: nextIndex
 			};
 
 			if (pageLimit) {
-				// nextPage
+				// NextPage
 				if (nextIndex % pageLimit === 0) {
 					newState.startInex = this.state.startInex + 1;
 					newState.endIndex = this.state.endIndex + 1;
@@ -123,7 +115,7 @@ class Select extends Component {
 			this.setState(newState);
 		}
 
-		if (key.name === "return") {
+		if (key.name === 'return') {
 			onSelect(items[selectedIndex]);
 		}
 	}
@@ -148,7 +140,7 @@ Select.defaultProps = {
 // Helpers -------------------------------------------------------------------
 const not = a => !a;
 const isEmpty = arr => arr.length === 0;
-const getMatch = input => ({ label }) =>
+const getMatch = input => ({label}) =>
 	!input ||
 	(input.length > 0 && label.toLowerCase().indexOf(input.toLowerCase()) > -1);
 
@@ -172,7 +164,7 @@ const AutoComplete = ({
 		<span>
 			<div>
 				<TextInput
-					value={value ? value : ""}
+					value={value ? value : ''}
 					placeholder={placeholder}
 					onChange={onChange}
 				/>
@@ -208,8 +200,8 @@ AutoComplete.propTypes = {
 };
 
 AutoComplete.defaultProps = {
-	value: "",
-	placeholder: "",
+	value: '',
+	placeholder: '',
 	items: [],
 	getMatch,
 	onChange: noop,
