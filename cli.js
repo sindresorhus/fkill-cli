@@ -100,7 +100,7 @@ function filterProcesses(input, processes, flags) {
 		.sort((a, b) => numSort.asc(a.pid, b.pid))
 		.map(proc => {
 			const lineLength = process.stdout.columns || 80;
-			const margins = commandLineMargins + proc.pid.toString().length;
+			const margins = commandLineMargins + proc.pid.toString().length + proc.port.length;
 			const length = lineLength - margins;
 			const name = cliTruncate(flags.verbose ? proc.cmd : proc.name, length, {position: 'middle'});
 			const port = proc.port && `:${proc.port}`;
