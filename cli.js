@@ -30,6 +30,7 @@ const cli = meow(`
 	Run without arguments to use the interactive interface.
 	The process name is case insensitive.
 `, {
+	inferType: true,
 	flags: {
 		force: {
 			type: 'boolean',
