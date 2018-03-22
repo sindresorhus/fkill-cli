@@ -47,11 +47,13 @@ const commandLineMargins = 4;
 
 const nameFilter = (input, proc) => {
 	const isPort = input[0] === ':';
-	const field = isPort ? proc.port : proc.name;
-	const keyword = isPort ? input.slice(1) : input;
 
-	return field.toLowerCase().includes(keyword.toLowerCase());
-};
+	if (isPort) {
+		return proc.ports.find(x => x.startsWith(input.slice(1)));
+	}
+
+	return proc.name.toLowerCase().includes(input.toLowerCase());
+}
 
 const filterProcesses = (input, processes, flags) => {
 	const filters = {
@@ -69,13 +71,13 @@ const filterProcesses = (input, processes, flags) => {
 		.sort((a, b) => numSort.asc(a.pid, b.pid))
 		.map(proc => {
 			const lineLength = process.stdout.columns || 80;
-			const margins = commandLineMargins + proc.pid.toString().length + proc.port.length;
+			const ports = proc.ports.map(x => `:${x}`).join(' ').trim();
+			const margins = commandLineMargins + proc.pid.toString().length + ports.length;
 			const length = lineLength - margins;
 			const name = cliTruncate(flags.verbose ? proc.cmd : proc.name, length, {position: 'middle'});
-			const port = proc.port && `:${proc.port}`;
 
 			return {
-				name: `${name} ${chalk.dim(proc.pid)} ${chalk.dim.magenta(port)}`,
+				name: `${name} ${chalk.dim(proc.pid)} ${chalk.dim.magenta(ports)}`,
 				value: proc.pid
 			};
 		});
@@ -119,18 +121,20 @@ const listProcesses = (processes, flags) => {
 const init = flags => {
 	escExit();
 
-	const getPortFromPid = (val, list) => {
+	const getPortsFromPid = (val, list) => {
+		const ports = [];
+
 		for (const x of list.entries()) {
 			if (val === x[1]) {
-				return String(x[0]);
+				ports.push(String(x[0]));
 			}
 		}
 
-		return '';
+		return ports;
 	};
 
 	return Promise.all([pidFromPort.list(), psList({all: false})])
-		.then(res => res[1].map(x => Object.assign(x, {port: getPortFromPid(x.pid, res[0])})))
+		.then(res => res[1].map(x => Object.assign(x, {ports: getPortsFromPid(x.pid, res[0])})))
 		.then(procs => listProcesses(procs, flags));
 };
 
