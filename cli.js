@@ -45,47 +45,15 @@ const cli = meow(`
 
 const commandLineMargins = 4;
 
-function init(flags) {
-	escExit();
-
-	const getPortFromPid = (val, list) => {
-		for (const x of list.entries()) {
-			if (val === x[1]) {
-				return String(x[0]);
-			}
-		}
-
-		return '';
-	};
-
-	return pidFromPort.list()
-		.then(ports => Promise.all([ports, psList({all: false})]))
-		.then(res => res[1].map(x => Object.assign(x, {port: getPortFromPid(x.pid, res[0])})))
-		.then(procs => listProcesses(procs, flags));
-}
-
-function listProcesses(processes, flags) {
-	inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
-
-	return inquirer.prompt([{
-		name: 'processes',
-		message: 'Running processes:',
-		type: 'autocomplete',
-		pageSize: 10,
-		source: (answers, input) => Promise.resolve().then(() => filterProcesses(input, processes, flags))
-	}])
-		.then(answer => fkill(answer.processes).catch(() => handleFkillError(answer.processes)));
-}
-
-function nameFilter(input, proc) {
+const nameFilter = (input, proc) => {
 	const isPort = input[0] === ':';
 	const field = isPort ? proc.port : proc.name;
 	const keyword = isPort ? input.slice(1) : input;
 
 	return field.toLowerCase().includes(keyword.toLowerCase());
-}
+};
 
-function filterProcesses(input, processes, flags) {
+const filterProcesses = (input, processes, flags) => {
 	const filters = {
 		name: proc => input ? nameFilter(input, proc) : true,
 		verbose: proc => input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true
@@ -111,13 +79,14 @@ function filterProcesses(input, processes, flags) {
 				value: proc.pid
 			};
 		});
-}
+};
 
-function handleFkillError(processes) {
+const handleFkillError = processes => {
 	const suffix = processes.length > 1 ? 'es' : '';
 
 	if (process.stdout.isTTY === false) {
-		console.log(`Error killing process${suffix}. Try \`fkill --force ${processes.join(' ')}\``);
+		console.error(`Error killing process${suffix}. Try \`fkill --force ${processes.join(' ')}\``);
+		process.exit(1);
 	} else {
 		return inquirer.prompt([{
 			type: 'confirm',
@@ -132,7 +101,38 @@ function handleFkillError(processes) {
 			}
 		});
 	}
-}
+};
+
+const listProcesses = (processes, flags) => {
+	inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
+
+	return inquirer.prompt([{
+		name: 'processes',
+		message: 'Running processes:',
+		type: 'autocomplete',
+		pageSize: 10,
+		source: (answers, input) => Promise.resolve().then(() => filterProcesses(input, processes, flags))
+	}])
+		.then(answer => fkill(answer.processes).catch(() => handleFkillError(answer.processes)));
+};
+
+const init = flags => {
+	escExit();
+
+	const getPortFromPid = (val, list) => {
+		for (const x of list.entries()) {
+			if (val === x[1]) {
+				return String(x[0]);
+			}
+		}
+
+		return '';
+	};
+
+	return Promise.all([pidFromPort.list(), psList({all: false})])
+		.then(res => res[1].map(x => Object.assign(x, {port: getPortFromPid(x.pid, res[0])})))
+		.then(procs => listProcesses(procs, flags));
+};
 
 if (cli.input.length === 0) {
 	init(cli.flags);
