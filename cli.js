@@ -53,7 +53,7 @@ const nameFilter = (input, proc) => {
 	}
 
 	return proc.name.toLowerCase().includes(input.toLowerCase());
-}
+};
 
 const filterProcesses = (input, processes, flags) => {
 	const filters = {
