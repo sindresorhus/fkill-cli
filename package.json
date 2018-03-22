@@ -52,7 +52,11 @@
 	},
 	"devDependencies": {
 		"ava": "*",
+		"delay": "^2.0.0",
 		"execa": "^0.8.0",
+		"get-port": "^3.2.0",
+		"noop-process": "^3.1.0",
+		"process-exists": "^3.1.0",
 		"xo": "*"
 	}
 }
