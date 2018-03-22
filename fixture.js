@@ -1,7 +1,8 @@
+'use strict';
 const http = require('http');
 
-const srv = http.createServer((req, res) => {
-	res.end();
+const server = http.createServer((request, response) => {
+	response.end();
 });
 
-srv.listen(process.argv.slice(2)[0]);
+server.listen(process.argv.slice(2)[0]);
