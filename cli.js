@@ -2,13 +2,10 @@
 'use strict';
 const meow = require('meow');
 const fkill = require('fkill');
-const chalk = require('chalk');
-const inquirer = require('inquirer');
-const psList = require('ps-list');
-const numSort = require('num-sort');
-const escExit = require('esc-exit');
-const cliTruncate = require('cli-truncate');
-const pidFromPort = require('pid-from-port');
+const importJsx = require('import-jsx');
+const {h, render} = require('ink');
+
+const ui = importJsx('./ui');
 
 const cli = meow(`
 	Usage
@@ -43,99 +40,17 @@ const cli = meow(`
 	}
 });
 
-const commandLineMargins = 4;
-
-const nameFilter = (input, proc) => {
-	const isPort = input[0] === ':';
-	const field = isPort ? proc.port : proc.name;
-	const keyword = isPort ? input.slice(1) : input;
-
-	return field.toLowerCase().includes(keyword.toLowerCase());
-};
-
-const filterProcesses = (input, processes, flags) => {
-	const filters = {
-		name: proc => input ? nameFilter(input, proc) : true,
-		verbose: proc => input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true
-	};
-
-	return processes
-		.filter(proc => !(
-			proc.name.endsWith('-helper') ||
-			proc.name.endsWith('Helper') ||
-			proc.name.endsWith('HelperApp')
-		))
-		.filter(flags.verbose ? filters.verbose : filters.name)
-		.sort((a, b) => numSort.asc(a.pid, b.pid))
-		.map(proc => {
-			const lineLength = process.stdout.columns || 80;
-			const margins = commandLineMargins + proc.pid.toString().length + proc.port.length;
-			const length = lineLength - margins;
-			const name = cliTruncate(flags.verbose ? proc.cmd : proc.name, length, {position: 'middle'});
-			const port = proc.port && `:${proc.port}`;
-
-			return {
-				name: `${name} ${chalk.dim(proc.pid)} ${chalk.dim.magenta(port)}`,
-				value: proc.pid
-			};
-		});
-};
-
 const handleFkillError = processes => {
 	const suffix = processes.length > 1 ? 'es' : '';
 
 	if (process.stdout.isTTY === false) {
 		console.error(`Error killing process${suffix}. Try \`fkill --force ${processes.join(' ')}\``);
 		process.exit(1);
-	} else {
-		return inquirer.prompt([{
-			type: 'confirm',
-			name: 'forceKill',
-			message: 'Error killing process. Would you like to use the force?'
-		}]).then(answer => {
-			if (answer.forceKill === true) {
-				return fkill(processes, {
-					force: true,
-					ignoreCase: true
-				});
-			}
-		});
 	}
 };
 
-const listProcesses = (processes, flags) => {
-	inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
-
-	return inquirer.prompt([{
-		name: 'processes',
-		message: 'Running processes:',
-		type: 'autocomplete',
-		pageSize: 10,
-		source: (answers, input) => Promise.resolve().then(() => filterProcesses(input, processes, flags))
-	}])
-		.then(answer => fkill(answer.processes).catch(() => handleFkillError(answer.processes)));
-};
-
-const init = flags => {
-	escExit();
-
-	const getPortFromPid = (val, list) => {
-		for (const x of list.entries()) {
-			if (val === x[1]) {
-				return String(x[0]);
-			}
-		}
-
-		return '';
-	};
-
-	return Promise.all([pidFromPort.list(), psList({all: false})])
-		.then(res => res[1].map(x => Object.assign(x, {port: getPortFromPid(x.pid, res[0])})))
-		.then(procs => listProcesses(procs, flags));
-};
-
 if (cli.input.length === 0) {
-	init(cli.flags);
+	render(h(ui, cli.flags));
 } else {
 	const promise = fkill(cli.input, Object.assign(cli.flags, {ignoreCase: true}));
 
