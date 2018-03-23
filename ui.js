@@ -67,16 +67,16 @@ class FkillUI extends Component {
 		});
 	}
 
-	handleSubmit(selectd) {
+	async handleSubmit(selectd) {
 		this.setState({
 			selectd
 		});
-		//  Process kill
-		fkill(selectd.pid)
-			.then(() => {
-				this.props.onExit();
-			})
-			.catch(() => this.handleFkillError(selectd));
+		try {
+			await fkill(selectd.pid);
+			this.props.onExit();
+		} catch (err) {
+			this.handleFkillError(selectd);
+		}
 	}
 
 	renderItem(proc, flags) {
@@ -142,22 +142,22 @@ class FkillUI extends Component {
 		});
 	}
 
-	handleConfirmSubmit() {
+	async handleConfirmSubmit() {
 		const value = this.state.confirmInput;
 		if (value && value.toLowerCase() === 'y') {
-			fkill(this.state.selectd.pid, {
-				force: true,
-				ignoreCase: true
-			})
-				.then(() => {})
-				.catch(err => {
-					this.setState({
-						status: ERROR,
-						errMsg: err.message
-					}).finally(() => {
-						this.props.onExit();
-					});
+			try {
+				await fkill(this.state.selectd.pid, {
+					force: true,
+					ignoreCase: true
 				});
+			} catch (err) {
+				this.setState({
+					status: ERROR,
+					errMsg: err.message
+				});
+			} finally {
+				this.props.onExit();
+			}
 		}
 	}
 
