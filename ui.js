@@ -65,7 +65,7 @@ const init = opts => {
 		.then(procs => mapProcs(procs, opts));
 };
 
-class Fkill extends Component {
+module.exports = class extends Component {
 	constructor(props) {
 		super(props);
 		this.handleChange = this.handleChange.bind(this);
@@ -96,6 +96,4 @@ class Fkill extends Component {
 			</div>
 		);
 	}
-}
-
-module.exports = Fkill;
+};

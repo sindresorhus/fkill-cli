@@ -51,7 +51,6 @@
 		"meow": "^4.0.0",
 		"num-sort": "^1.0.0",
 		"pid-from-port": "^1.1.1",
-		"prop-types": "^15.6.1",
 		"ps-list": "^4.0.0"
 	},
 	"devDependencies": {
