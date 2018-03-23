@@ -44,48 +44,42 @@ const cli = meow(
 	}
 );
 
-function init() {
+async function init() {
 	const getPortFromPid = (val, list) => {
 		for (const x of list.entries()) {
 			if (val === x[1]) {
 				return String(x[0]);
 			}
 		}
-
 		return '';
 	};
 
-	return pidFromPort
-		.list()
-		.then(ports => Promise.all([ports, psList({all: false})]))
-		.then(res =>
-			res[1].map(x => Object.assign(x, {port: getPortFromPid(x.pid, res[0])}))
-		)
-		.then(procs => Promise.resolve(procs));
+	const ports = await pidFromPort.list();
+	const res = await Promise.all([ports, psList({all: false})]);
+	const procs = res[1].map(x =>
+		Object.assign(x, {port: getPortFromPid(x.pid, res[0])})
+	);
+	return procs;
 }
 
 const onExit = () => {
 	process.exit(1);
 };
 
-if (cli.input.length === 0) {
-	// Init the process list in ui
-	init(cli.flags).then(list => {
+(async function () {
+	if (cli.input.length === 0) {
+		// Init the process list in ui
+		const list = await init(cli.flags);
 		render(h(ui, {list, flags: cli.flags, onExit}));
-	});
-} else {
-	const promise = fkill(
-		cli.input,
-		Object.assign(cli.flags, {ignoreCase: true})
-	);
-
-	if (!cli.flags.force) {
-		promise.catch(err => {
+	} else if (!cli.flags.force) {
+		try {
+			await fkill(cli.input, Object.assign(cli.flags, {ignoreCase: true}));
+		} catch (err) {
 			if (/Couldn't find a process with port/.test(err.message)) {
-				render(h(ui, {error: err.message, onExit}));
-				process.exit(1);
+					render(h(ui, {error: err.message, onExit}));
+					process.exit(1);
 			}
-			render(h(ui, {selected: cli.input, onExit}));
-		});
+				render(h(ui, {selected: cli.input, onExit}));
+		}
 	}
-}
+})();
