@@ -2,13 +2,12 @@
 const {h, Component, Text} = require('ink');
 const autoBind = require('auto-bind');
 const escExit = require('esc-exit');
-const importJsx = require('import-jsx');
 const fkill = require('fkill');
 const ConfirmInput = require('ink-confirm-input');
 const cliTruncate = require('cli-truncate');
 const PropTypes = require('prop-types');
 
-const AutoComplete = importJsx('./temp-component');
+const AutoComplete = require('ink-power-auto-complete').default;
 
 // Status flag
 const DEFAULT = 1;

@@ -18,7 +18,9 @@
 	"scripts": {
 		"test": "xo && ava"
 	},
-	"files": ["cli.js"],
+	"files": [
+		"cli.js"
+	],
 	"keywords": [
 		"cli-app",
 		"cli",
@@ -46,6 +48,7 @@
 		"ink": "^0.4.1",
 		"ink-autocomplete": "^0.0.0",
 		"ink-confirm-input": "^1.0.3",
+		"ink-power-auto-complete": "^1.0.1",
 		"ink-text-input": "^1.1.1",
 		"lodash.isequal": "^4.5.0",
 		"meow": "^4.0.0",
@@ -62,7 +65,9 @@
 		"xo": "*"
 	},
 	"xo": {
-		"extends": ["xo-react"],
+		"extends": [
+			"xo-react"
+		],
 		"rules": {
 			"react/prop-types": 0
 		},
@@ -71,6 +76,8 @@
 				"pragma": "h"
 			}
 		},
-		"ignores": ["temp-component.js"]
+		"ignores": [
+			"temp-component.js"
+		]
 	}
 }
