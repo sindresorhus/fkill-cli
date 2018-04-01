@@ -48,7 +48,7 @@
 		"ink": "^0.4.1",
 		"ink-autocomplete": "^0.0.0",
 		"ink-confirm-input": "^1.0.3",
-		"ink-power-auto-complete": "^1.0.1",
+		"ink-power-auto-complete": "^1.0.2",
 		"ink-text-input": "^1.1.1",
 		"lodash.isequal": "^4.5.0",
 		"meow": "^4.0.0",

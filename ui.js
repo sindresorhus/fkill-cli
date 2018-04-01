@@ -9,21 +9,14 @@ const PropTypes = require('prop-types');
 
 const AutoComplete = require('ink-power-auto-complete').default;
 
+const getPainItem = item => (item.obj ? item.obj : item);
+
 // Status flag
 const DEFAULT = 1;
 const CONFIRM = 2;
 const ERROR = -1;
 
 const commandLineMargins = 4;
-
-// Util
-function nameFilter(input, proc) {
-	const isPort = input[0] === ':';
-	const field = isPort ? proc.port : proc.name;
-	const keyword = isPort ? input.slice(1) : input;
-
-	return field.toLowerCase().includes(keyword.toLowerCase());
-}
 
 // Error message
 const ErrorMessage = ({msg}) => {
@@ -54,7 +47,7 @@ class FkillUI extends Component {
 				label: `${item.name}  pid:${item.pid}`,
 				value: item.pid
 			})),
-			searching: null,
+			searching: '',
 			selectd: props.selected,
 			confirmInput: ''
 		};
@@ -62,7 +55,7 @@ class FkillUI extends Component {
 
 	handleChange(input) {
 		this.setState({
-			searching: input
+			searching: `${input}`
 		});
 	}
 
@@ -78,17 +71,29 @@ class FkillUI extends Component {
 		}
 	}
 
-	renderItem(proc, flags) {
+	renderItem(proc, flags, fuzzysort) {
+		let procObj = getPainItem(proc);
+		// Fuzzysort
+		if (proc.obj) {
+			procObj = proc.obj;
+			procObj.name = fuzzysort.highlight(proc, '', '');
+		}
+
 		const lineLength = process.stdout.columns || 80;
-		const margins = commandLineMargins + proc.pid.toString().length;
+		const margins = commandLineMargins + procObj.pid.toString().length;
 		const length = lineLength - margins;
-		const name = cliTruncate(flags.verbose ? proc.cmd : proc.name, length, {
-			position: 'middle'
-		});
-		const port = proc.port && `:${proc.port}`;
+		const name = cliTruncate(
+			flags.verbose ? procObj.cmd : procObj.name,
+			length,
+			{
+				position: 'middle'
+			}
+		);
+		const port = procObj.port && `:${procObj.port}`;
+
 		return (
 			<Text>
-				{name} <Text dim>{proc.pid}</Text>{' '}
+				{name} <Text dim>{procObj.pid}</Text>{' '}
 				<Text dim magenta>
 					{port}
 				</Text>
@@ -123,15 +128,10 @@ class FkillUI extends Component {
 				return result;
 			}
 
-			const filters = {
-				name: proc => (input ? nameFilter(input, proc) : true),
-				verbose: proc =>
-					input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true
-			};
+			const verboseFilter = proc =>
+				input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true;
 
-			const filter = flags.verbose ? filters.verbose : filters.name;
-
-			return filter(item);
+			return flags.verbose ? verboseFilter(item) : item;
 		};
 	}
 
@@ -193,8 +193,16 @@ class FkillUI extends Component {
 					onChange={this.handleChange}
 					onSubmit={this.handleSubmit}
 					pageLimit={10}
+					getMatchItems={(value, items, fuzzysort) =>
+						fuzzysort.go(value, items, {
+							key: 'name'
+						})
+					}
 					getMatch={this.itemsMatch}
-					itemComponent={items => this.renderItem(items, flags)}
+					itemComponent={(items, fuzzysort) =>
+						this.renderItem(items, flags, fuzzysort)
+					}
+					showListDefault
 				/>
 			</div>
 		);
