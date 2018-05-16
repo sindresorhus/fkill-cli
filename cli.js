@@ -71,7 +71,7 @@ const filterProcesses = (input, processes, flags) => {
 		.sort((a, b) => numSort.asc(a.pid, b.pid))
 		.map(proc => {
 			const lineLength = process.stdout.columns || 80;
-			const ports = proc.ports.map(x => `:${x}`).join(' ').trim();
+			const ports = proc.ports.slice(0, 4).map(x => `:${x}`).join(' ').trim();
 			const margins = commandLineMargins + proc.pid.toString().length + ports.length;
 			const length = lineLength - margins;
 			const name = cliTruncate(flags.verbose ? proc.cmd : proc.name, length, {position: 'middle'});
