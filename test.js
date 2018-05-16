@@ -25,13 +25,13 @@ test('pid', async t => {
 
 test('kill from port', async t => {
 	const port = await getPort();
-	const pid = childProcess.spawn('node', ['fixture.js', port]).pid;
+	const {pid} = childProcess.spawn('node', ['fixture.js', port]);
 	await execa('./cli.js', ['--force', pid]);
 	await noopProcessKilled(t, pid);
 	t.is(await getPort(port), port);
 });
 
 test('error when process is not found', async t => {
-	const err = await t.throws(execa('./cli.js', ['--force', 'notFoundProcess']));
-	t.regex(err.message, /Killing process notFoundProcess failed: Process doesn't exist/);
+	const error = await t.throws(execa('./cli.js', ['--force', 'notFoundProcess']));
+	t.regex(error.message, /Killing process notFoundProcess failed: Process doesn't exist/);
 });

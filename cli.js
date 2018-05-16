@@ -83,42 +83,47 @@ const filterProcesses = (input, processes, flags) => {
 		});
 };
 
-const handleFkillError = processes => {
+const handleFkillError = async processes => {
 	const suffix = processes.length > 1 ? 'es' : '';
 
 	if (process.stdout.isTTY === false) {
 		console.error(`Error killing process${suffix}. Try \`fkill --force ${processes.join(' ')}\``);
 		process.exit(1);
 	} else {
-		return inquirer.prompt([{
+		const answer = await inquirer.prompt([{
 			type: 'confirm',
 			name: 'forceKill',
 			message: 'Error killing process. Would you like to use the force?'
-		}]).then(answer => {
-			if (answer.forceKill === true) {
-				return fkill(processes, {
-					force: true,
-					ignoreCase: true
-				});
-			}
-		});
+		}]);
+
+		if (answer.forceKill === true) {
+			await fkill(processes, {
+				force: true,
+				ignoreCase: true
+			});
+		}
 	}
 };
 
-const listProcesses = (processes, flags) => {
+const listProcesses = async (processes, flags) => {
 	inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
 
-	return inquirer.prompt([{
+	const answer = await inquirer.prompt([{
 		name: 'processes',
 		message: 'Running processes:',
 		type: 'autocomplete',
 		pageSize: 10,
-		source: (answers, input) => Promise.resolve().then(() => filterProcesses(input, processes, flags))
-	}])
-		.then(answer => fkill(answer.processes).catch(() => handleFkillError(answer.processes)));
+		source: async (answers, input) => filterProcesses(input, processes, flags)
+	}]);
+
+	try {
+		fkill(answer.processes);
+	} catch (_) {
+		handleFkillError(answer.processes);
+	}
 };
 
-const init = flags => {
+const init = async flags => {
 	escExit();
 
 	const getPortsFromPid = (val, list) => {
@@ -133,9 +138,12 @@ const init = flags => {
 		return ports;
 	};
 
-	return Promise.all([pidFromPort.list(), psList({all: false})])
-		.then(res => res[1].map(x => Object.assign(x, {ports: getPortsFromPid(x.pid, res[0])})))
-		.then(procs => listProcesses(procs, flags));
+	const [pids, processes] = await Promise.all([
+		pidFromPort.list(),
+		psList({all: false})
+	]);
+	const procs = processes.map(x => Object.assign(x, {ports: getPortsFromPid(x.pid, pids)}));
+	listProcesses(procs, flags);
 };
 
 if (cli.input.length === 0) {
