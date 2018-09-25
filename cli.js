@@ -116,11 +116,9 @@ const listProcesses = async (processes, flags) => {
 		source: async (answers, input) => filterProcesses(input, processes, flags)
 	}]);
 
-	try {
-		fkill(answer.processes);
-	} catch (_) {
-		handleFkillError(answer.processes);
-	}
+	fkill(answer.processes).catch(err => {
+		return handleFkillError(answer.processes);
+	});
 };
 
 const init = async flags => {
