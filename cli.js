@@ -116,8 +116,8 @@ const listProcesses = async (processes, flags) => {
 		source: async (answers, input) => filterProcesses(input, processes, flags)
 	}]);
 
-	fkill(answer.processes).catch(err => {
-		return handleFkillError(answer.processes);
+	fkill(answer.processes).catch(() => {
+		handleFkillError(answer.processes);
 	});
 };
 
