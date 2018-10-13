@@ -1,6 +1,6 @@
 <h1 align="center">
 	<br>
-	<img width="360" src="https://rawgit.com/sindresorhus/fkill/master/media/logo.svg" alt="fkill">
+	<img src="media/logo.svg" width="360" alt="fkill">
 	<br>
 	<br>
 	<br>
