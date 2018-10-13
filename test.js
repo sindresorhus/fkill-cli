@@ -28,7 +28,7 @@ test('kill from port', async t => {
 	const {pid} = childProcess.spawn('node', ['fixture.js', port]);
 	await execa('./cli.js', ['--force', pid]);
 	await noopProcessKilled(t, pid);
-	t.is(await getPort(port), port);
+	t.is(await getPort({port}), port);
 });
 
 test('error when process is not found', async t => {

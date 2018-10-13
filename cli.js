@@ -113,7 +113,7 @@ const listProcesses = async (processes, flags) => {
 		message: 'Running processes:',
 		type: 'autocomplete',
 		pageSize: 10,
-		source: async (answers, input) => filterProcesses(input, processes, flags)
+		source: async (answers, input) => filterProcesses(input, processes, flags) // eslint-disable-line require-await
 	}]);
 
 	try {
@@ -126,12 +126,12 @@ const listProcesses = async (processes, flags) => {
 const init = async flags => {
 	escExit();
 
-	const getPortsFromPid = (val, list) => {
+	const getPortsFromPid = (value, list) => {
 		const ports = [];
 
-		for (const x of list.entries()) {
-			if (val === x[1]) {
-				ports.push(String(x[0]));
+		for (const [key, listValue] of list.entries()) {
+			if (value === listValue) {
+				ports.push(String(key));
 			}
 		}
 
@@ -142,19 +142,19 @@ const init = async flags => {
 		pidFromPort.list(),
 		psList({all: false})
 	]);
-	const procs = processes.map(x => Object.assign(x, {ports: getPortsFromPid(x.pid, pids)}));
+	const procs = processes.map(proc => ({...proc, ports: getPortsFromPid(proc.pid, pids)}));
 	listProcesses(procs, flags);
 };
 
 if (cli.input.length === 0) {
 	init(cli.flags);
 } else {
-	const promise = fkill(cli.input, Object.assign(cli.flags, {ignoreCase: true}));
+	const promise = fkill(cli.input, {...cli.flags, ignoreCase: true});
 
 	if (!cli.flags.force) {
-		promise.catch(err => {
-			if (/Couldn't find a process with port/.test(err.message)) {
-				console.error(err.message);
+		promise.catch(error => {
+			if (/Couldn't find a process with port/.test(error.message)) {
+				console.error(error.message);
 				process.exit(1);
 			}
 
