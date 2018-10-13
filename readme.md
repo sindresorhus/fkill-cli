@@ -1,6 +1,6 @@
 <h1 align="center">
 	<br>
-	<img src="media/logo.svg" width="360" alt="fkill">
+	<img width="360" src="https://rawgit.com/sindresorhus/fkill/master/media/logo.svg" alt="fkill">
 	<br>
 	<br>
 	<br>
@@ -47,7 +47,7 @@ $ fkill --help
 
 Run `fkill` without arguments to launch the interactive UI.
 
-![](https://rawgit.com/sindresorhus/fkill-cli/master/screenshot.svg)
+![](screenshot.svg)
 
 
 ## Related
