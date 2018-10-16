@@ -1,6 +1,6 @@
 {
 	"name": "fkill-cli",
-	"version": "4.0.0",
+	"version": "5.1.0",
 	"description": "Fabulously kill processes. Cross-platform.",
 	"license": "MIT",
 	"repository": "sindresorhus/fkill-cli",
@@ -13,7 +13,7 @@
 		"fkill": "cli.js"
 	},
 	"engines": {
-		"node": ">=4"
+		"node": ">=8"
 	},
 	"scripts": {
 		"test": "xo && ava"
@@ -41,17 +41,22 @@
 	"dependencies": {
 		"chalk": "^2.1.0",
 		"cli-truncate": "^1.0.0",
-		"esc-exit": "^1.0.0",
+		"esc-exit": "^2.0.0",
 		"fkill": "^5.2.0",
-		"inquirer": "^3.0.3",
-		"inquirer-autocomplete-prompt": "^0.12.1",
-		"meow": "^4.0.0",
+		"inquirer": "^6.2.0",
+		"inquirer-autocomplete-prompt": "^1.0.1",
+		"meow": "^5.0.0",
 		"num-sort": "^1.0.0",
-		"ps-list": "^4.0.0"
+		"pid-from-port": "^1.1.1",
+		"ps-list": "^5.0.1"
 	},
 	"devDependencies": {
-		"ava": "*",
-		"execa": "^0.8.0",
-		"xo": "*"
+		"ava": "^0.25.0",
+		"delay": "^4.1.0",
+		"execa": "^1.0.0",
+		"get-port": "^4.0.0",
+		"noop-process": "^3.1.0",
+		"process-exists": "^3.1.0",
+		"xo": "^0.23.0"
 	}
 }

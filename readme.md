@@ -1,6 +1,6 @@
 <h1 align="center">
 	<br>
-	<img width="360" src="https://rawgit.com/sindresorhus/fkill/master/media/logo.svg" alt="fkill">
+	<img width="360" src="https://cdn.jsdelivr.net/gh/sindresorhus/fkill@913dce9ae670cd12410f6a64eaf94d7e5f50ed69/media/logo.svg" alt="fkill">
 	<br>
 	<br>
 	<br>
@@ -19,6 +19,10 @@ Works on macOS, Linux, and Windows.
 $ npm install --global fkill-cli
 ```
 
+<a href="https://www.patreon.com/sindresorhus">
+	<img src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" width="160">
+</a>
+
 
 ## Usage
 
@@ -36,8 +40,11 @@ $ fkill --help
   Examples
     $ fkill 1337
     $ fkill safari
-    $ fkill 1337 safari
+    $ fkill :8080
+    $ fkill 1337 safari :8080
     $ fkill
+
+  To kill a port, prefix it with a colon. For example: :8080.
 
   Run without arguments to use the interactive interface.
   The process name is case insensitive.
