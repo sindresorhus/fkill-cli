@@ -121,11 +121,9 @@ const listProcesses = async (processes, flags) => {
 		source: async (answers, input) => filterProcesses(input, processes, flags) // eslint-disable-line require-await
 	}]);
 
-	try {
-		fkill(answer.processes);
-	} catch (_) {
+	fkill(answer.processes).catch(() => {
 		handleFkillError(answer.processes);
-	}
+	});
 };
 
 const init = async flags => {
