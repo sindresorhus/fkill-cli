@@ -17,6 +17,7 @@ const cli = meow(`
 	Options
 	  --force -f    Force kill
 	  --verbose -v  Show process arguments
+	  --silent -s   Silently kill and always exit with code 0
 
 	Examples
 	  $ fkill 1337
@@ -39,6 +40,10 @@ const cli = meow(`
 		verbose: {
 			type: 'boolean',
 			alias: 'v'
+		},
+		silent: {
+			type: 'boolean',
+			alias: 's'
 		}
 	}
 });
@@ -153,6 +158,10 @@ if (cli.input.length === 0) {
 
 	if (!cli.flags.force) {
 		promise.catch(error => {
+			if (cli.flags.silent) {
+				return;
+			}
+
 			if (/Couldn't find a process with port/.test(error.message)) {
 				console.error(error.message);
 				process.exit(1);
