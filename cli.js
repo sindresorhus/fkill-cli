@@ -16,7 +16,7 @@ const cli = meow(`
 	Options
 	  --force -f    Force kill
 	  --verbose -v  Show process arguments
-	  --silent -s   Silently kill process
+	  --silent -s   Silently kill and always exit with code 0
 
 	Examples
 	  $ fkill 1337
