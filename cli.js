@@ -122,7 +122,7 @@ const listProcesses = async (processes, flags) => {
 	}]);
 
 	try {
-		fkill(answer.processes);
+		await fkill(answer.processes);
 	} catch (_) {
 		handleFkillError(answer.processes);
 	}
