@@ -118,7 +118,7 @@ const listProcesses = async (processes, flags) => {
 		message: 'Running processes:',
 		type: 'autocomplete',
 		pageSize: 10,
-		source: async (answers, input) => filterProcesses(input, processes, flags) // eslint-disable-line require-await
+		source: async (answers, input) => filterProcesses(input, processes, flags)
 	}]);
 
 	try {
