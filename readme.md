@@ -55,7 +55,7 @@ $ fkill --help
 
 Run `fkill` without arguments to launch the interactive UI.
 
-![](screenshot.gif)
+![](screenshot.svg)
 
 
 ## Related
