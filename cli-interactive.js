@@ -1,3 +1,4 @@
+'use strict';
 const chalk = require('chalk');
 const inquirer = require('inquirer');
 const psList = require('ps-list');
