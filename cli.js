@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 'use strict';
 const meow = require('meow');
+const fkill = require('fkill');
 
 const cli = meow(`
 	Usage
@@ -41,10 +42,8 @@ const cli = meow(`
 });
 
 if (cli.input.length === 0) {
-	require('./interactive').init(cli.flags);
+	require('./cli-interactive').init(cli.flags);
 } else {
-	const fkill = require('fkill');
-
 	const promise = fkill(cli.input, {...cli.flags, ignoreCase: true});
 
 	if (!cli.flags.force) {
@@ -58,7 +57,7 @@ if (cli.input.length === 0) {
 				process.exit(1);
 			}
 
-			return require('./interactive').handleFkillError(cli.input);
+			return require('./cli-interactive').handleFkillError(cli.input);
 		});
 	}
 }
