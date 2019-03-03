@@ -49,7 +49,7 @@ const runPtyWithInputs = opts => {
 
 		const sendInputIfNeeded = () => {
 			const input = opts.inputs[inputIndex];
-			if (input !== null && input !== undefined) {
+			if (input) {
 				ptyProcess.write(input);
 				expectingPrint = true;
 			}
@@ -70,7 +70,10 @@ const runPtyWithInputs = opts => {
 				sendInputIfNeeded();
 			}
 		});
-		sendInputIfNeeded();
+		if (opts.initialInput) {
+			ptyProcess.write(opts.initialInput);
+			expectingPrint = true;
+		}
 	});
 };
 
@@ -88,11 +91,10 @@ test('interactive mode works', async t => {
 			env: process.env
 		},
 		inputs: [
-			null,
 			`:${port}`,
 			'\r\n'
 		],
-		timeout: 5000
+		timeout: 30000
 	});
 	await noopProcessKilled(t, pid);
 	t.is(await getPort({port}), port);
