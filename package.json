@@ -55,7 +55,6 @@
 		"delay": "^4.1.0",
 		"execa": "^1.0.0",
 		"get-port": "^4.0.0",
-		"node-pty": "^0.8.1",
 		"noop-process": "^3.1.0",
 		"process-exists": "^3.1.0",
 		"xo": "^0.23.0"
