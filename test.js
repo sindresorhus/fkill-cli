@@ -37,16 +37,20 @@ test('error when process is not found', async t => {
 	t.regex(error.message, /Killing process notFoundProcess failed: Process doesn't exist/);
 });
 
-const runPtyWithInputs = (cmd, args, opts, inputs) => {
+const runPtyWithInputs = opts => {
 	return new Promise((resolve, reject) => {
 		let inputIndex = 0;
 		let expectingPrint = false;
-		const ptyProcess = pty.spawn(cmd, args, opts);
+		const ptyProcess = pty.spawn(opts.cmd, opts.args, opts.opts);
+		setTimeout(() => {
+			reject(new Error('timeout'));
+			ptyProcess.kill();
+		}, opts.timeout);
 
 		const sendInputIfNeeded = () => {
-			const input = inputs[inputIndex];
+			const input = opts.inputs[inputIndex];
 			if (input !== null && input !== undefined) {
-				ptyProcess.write(inputs[inputIndex]);
+				ptyProcess.write(input);
 				expectingPrint = true;
 			}
 			inputIndex++;
@@ -64,7 +68,6 @@ const runPtyWithInputs = (cmd, args, opts, inputs) => {
 				expectingPrint = false;
 			} else {
 				sendInputIfNeeded();
-				inputIndex++;
 			}
 		});
 		sendInputIfNeeded();
@@ -74,17 +77,23 @@ const runPtyWithInputs = (cmd, args, opts, inputs) => {
 test('interactive mode works', async t => {
 	const port = await getPort();
 	const {pid} = childProcess.spawn('node', ['fixture.js', port]);
-	await runPtyWithInputs('node', ['./cli.js'], {
-		name: 'xterm-color',
-		cols: 80,
-		rows: 30,
-		cwd: process.cwd(),
-		env: process.env
-	}, [
-		null,
-		`:${port}`,
-		'\r\n'
-	]);
+	await runPtyWithInputs({
+		cmd: 'node',
+		args: ['./cli.js'],
+		opts: {
+			name: 'xterm-color',
+			cols: 80,
+			rows: 30,
+			cwd: process.cwd(),
+			env: process.env
+		},
+		inputs: [
+			null,
+			`:${port}`,
+			'\r\n'
+		],
+		timeout: 2000
+	});
 	await noopProcessKilled(t, pid);
 	t.is(await getPort({port}), port);
 });
