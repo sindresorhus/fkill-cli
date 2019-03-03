@@ -69,7 +69,7 @@ const runPtyWithInputs = opts => {
 			const outputIndex = outputsReceived;
 			setTimeout(() => {
 				if (outputIndex === outputsReceived) {
-					reject(new Error('timeout'));
+					reject(new Error('output timeout'));
 					ptyProcess.kill();
 				}
 			}, opts.outputTimeout);
@@ -104,8 +104,8 @@ test('interactive mode works', async t => {
 			`:${port}`,
 			'\r\n'
 		],
-		outputTimeout: 10000,
-		timeout: 60000
+		outputTimeout: 20000,
+		timeout: 120000
 	});
 	await noopProcessKilled(t, pid);
 	t.is(await getPort({port}), port);
