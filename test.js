@@ -41,30 +41,33 @@ const runPtyWithInputs = (cmd, args, opts, inputs) => {
 	return new Promise((resolve, reject) => {
 		let inputIndex = 0;
 		let expectingPrint = false;
-		var ptyProcess = pty.spawn(cmd, args, opts);
-		ptyProcess.on('error', (err) => {
-			if(err && err.code == 'EIO') {
+		const ptyProcess = pty.spawn(cmd, args, opts);
+
+		const sendInputIfNeeded = () => {
+			const input = inputs[inputIndex];
+			if (input !== null && input !== undefined) {
+				ptyProcess.write(inputs[inputIndex]);
+				expectingPrint = true;
+			}
+			inputIndex++;
+		};
+
+		ptyProcess.on('error', err => {
+			if (err && err.code === 'EIO') {
 				resolve();
 			} else {
 				reject(err);
 			}
 		});
-		ptyProcess.on('data', (d) => {
-			if(expectingPrint) {
+		ptyProcess.on('data', () => {
+			if (expectingPrint) {
 				expectingPrint = false;
-			}
-			else{
-				if(inputs[inputIndex] != null){
-					ptyProcess.write(inputs[inputIndex]);
-					expectingPrint = true;
-				}
+			} else {
+				sendInputIfNeeded();
 				inputIndex++;
 			}
 		});
-		if(inputs[inputIndex] != null){
-			ptyProcess.write(inputs[inputIndex]);
-			expectingPrint = true;
-		}
+		sendInputIfNeeded();
 	});
 };
 
@@ -76,11 +79,11 @@ test('interactive mode works', async t => {
 		cols: 80,
 		rows: 30,
 		cwd: process.cwd(),
-		env: process.env,
+		env: process.env
 	}, [
 		null,
 		`:${port}`,
-		'\r\n',
+		'\r\n'
 	]);
 	await noopProcessKilled(t, pid);
 	t.is(await getPort({port}), port);
