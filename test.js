@@ -92,7 +92,7 @@ test('interactive mode works', async t => {
 			`:${port}`,
 			'\r\n'
 		],
-		timeout: 2000
+		timeout: 5000
 	});
 	await noopProcessKilled(t, pid);
 	t.is(await getPort({port}), port);
