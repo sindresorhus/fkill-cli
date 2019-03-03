@@ -41,6 +41,7 @@ const runPtyWithInputs = opts => {
 	return new Promise((resolve, reject) => {
 		let inputIndex = 0;
 		let expectingPrint = false;
+		let outputsReceived = 0;
 		const ptyProcess = pty.spawn(opts.cmd, opts.args, opts.opts);
 		setTimeout(() => {
 			reject(new Error('timeout'));
@@ -64,6 +65,15 @@ const runPtyWithInputs = opts => {
 			}
 		});
 		ptyProcess.on('data', () => {
+			outputsReceived++;
+			const outputIndex = outputsReceived;
+			setTimeout(() => {
+				if (outputIndex === outputsReceived) {
+					reject(new Error('timeout'));
+					ptyProcess.kill();
+				}
+			}, opts.outputTimeout);
+
 			if (expectingPrint) {
 				expectingPrint = false;
 			} else {
@@ -94,7 +104,8 @@ test('interactive mode works', async t => {
 			`:${port}`,
 			'\r\n'
 		],
-		timeout: 30000
+		outputTimeout: 10000,
+		timeout: 60000
 	});
 	await noopProcessKilled(t, pid);
 	t.is(await getPort({port}), port);
