@@ -9,6 +9,7 @@ const numSort = require('num-sort');
 const escExit = require('esc-exit');
 const cliTruncate = require('cli-truncate');
 const pidFromPort = require('pid-from-port');
+const processExists = require('process-exists');
 
 const cli = meow(`
 	Usage
@@ -151,23 +152,48 @@ const init = async flags => {
 	listProcesses(procs, flags);
 };
 
-if (cli.input.length === 0) {
-	init(cli.flags);
-} else {
-	const promise = fkill(cli.input, {...cli.flags, ignoreCase: true});
+const forceKillIfRunning = async input => {
+	if (!isNaN(input)) {
+		input = parseInt(input, 10);
+	}
 
-	if (!cli.flags.force) {
-		promise.catch(error => {
-			if (cli.flags.silent) {
-				return;
-			}
+	const exists = await processExists(input);
 
+	if (exists) {
+		await fkill(input, {
+			force: true,
+			ignoreCase: true
+		});
+	}
+};
+
+const kill = async (input, flags) => {
+	try {
+		await fkill(input, {...flags, ignoreCase: true});
+	} catch (error) {
+		if (flags.silent) {
+			return;
+		}
+
+		if (!flags.force) {
 			if (/Couldn't find a process with port/.test(error.message)) {
 				console.error(error.message);
 				process.exit(1);
 			}
 
-			return handleFkillError(cli.input);
-		});
+			await handleFkillError(input);
+		}
+
+		throw error;
 	}
+
+	if (!flags.force) {
+		await forceKillIfRunning(input);
+	}
+};
+
+if (cli.input.length === 0) {
+	init(cli.flags);
+} else {
+	kill(cli.input, cli.flags);
 }
