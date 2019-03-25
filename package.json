@@ -19,7 +19,8 @@
 		"test": "xo && ava"
 	},
 	"files": [
-		"cli.js"
+		"cli.js",
+		"interactive.js"
 	],
 	"keywords": [
 		"cli-app",
@@ -39,24 +40,24 @@
 		"proc"
 	],
 	"dependencies": {
-		"chalk": "^2.1.0",
+		"chalk": "^2.4.2",
 		"cli-truncate": "^1.0.0",
 		"esc-exit": "^2.0.0",
-		"fkill": "^5.2.0",
-		"inquirer": "^6.2.0",
+		"fkill": "^6.0.0",
+		"inquirer": "^6.2.2",
 		"inquirer-autocomplete-prompt": "^1.0.1",
 		"meow": "^5.0.0",
 		"num-sort": "^1.0.0",
 		"pid-from-port": "^1.1.1",
-		"ps-list": "^5.0.1"
+		"ps-list": "^6.2.0"
 	},
 	"devDependencies": {
-		"ava": "^0.25.0",
+		"ava": "^1.4.0",
 		"delay": "^4.1.0",
 		"execa": "^1.0.0",
-		"get-port": "^4.0.0",
+		"get-port": "^4.2.0",
 		"noop-process": "^3.1.0",
 		"process-exists": "^3.1.0",
-		"xo": "^0.23.0"
+		"xo": "^0.24.0"
 	}
 }

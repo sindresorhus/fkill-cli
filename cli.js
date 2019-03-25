@@ -42,7 +42,7 @@ const cli = meow(`
 });
 
 if (cli.input.length === 0) {
-	require('./cli-interactive').init(cli.flags);
+	require('./interactive').init(cli.flags);
 } else {
 	const promise = fkill(cli.input, {...cli.flags, ignoreCase: true});
 
@@ -57,7 +57,7 @@ if (cli.input.length === 0) {
 				process.exit(1);
 			}
 
-			return require('./cli-interactive').handleFkillError(cli.input);
+			return require('./interactive').handleFkillError(cli.input);
 		});
 	}
 }

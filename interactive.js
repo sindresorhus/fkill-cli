@@ -23,7 +23,7 @@ const nameFilter = (input, proc) => {
 const filterProcesses = (input, processes, flags) => {
 	const filters = {
 		name: proc => input ? nameFilter(input, proc) : true,
-		verbose: proc => input ? proc.cmd.toLowerCase().includes(input.toLowerCase()) : true
+		verbose: proc => input ? (process.platform === 'win32' ? proc.name : proc.cmd).toLowerCase().includes(input.toLowerCase()) : true
 	};
 
 	return processes
@@ -39,7 +39,7 @@ const filterProcesses = (input, processes, flags) => {
 			const ports = proc.ports.slice(0, 4).map(x => `:${x}`).join(' ').trim();
 			const margins = commandLineMargins + proc.pid.toString().length + ports.length;
 			const length = lineLength - margins;
-			const name = cliTruncate(flags.verbose ? proc.cmd : proc.name, length, {position: 'middle'});
+			const name = cliTruncate(flags.verbose && process.platform !== 'win32' ? proc.cmd : proc.name, length, {position: 'middle'});
 
 			return {
 				name: `${name} ${chalk.dim(proc.pid)} ${chalk.dim.magenta(ports)}`,

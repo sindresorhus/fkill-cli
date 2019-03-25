@@ -12,7 +12,7 @@ const noopProcessKilled = async (t, pid) => {
 	t.false(await processExists(pid));
 };
 
-test(async t => {
+test('main', async t => {
 	const {stdout} = await execa('./cli.js', ['--version']);
 	t.true(stdout.length > 0);
 });
@@ -32,6 +32,8 @@ test('kill from port', async t => {
 });
 
 test('error when process is not found', async t => {
-	const error = await t.throws(execa('./cli.js', ['--force', 'notFoundProcess']));
-	t.regex(error.message, /Killing process notFoundProcess failed: Process doesn't exist/);
+	await t.throwsAsync(
+		execa('./cli.js', ['--force', 'notFoundProcess']),
+		/Killing process notFoundProcess failed: Process doesn't exist/
+	);
 });
