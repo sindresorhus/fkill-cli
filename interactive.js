@@ -26,6 +26,9 @@ const filterProcesses = (input, processes, flags) => {
 		verbose: proc => input ? (process.platform === 'win32' ? proc.name : proc.cmd).toLowerCase().includes(input.toLowerCase()) : true
 	};
 
+	const memoryThreshold = flags.verbose ? 0.0 : 0.5;
+	const cpuThreshold = flags.verbose ? 0.0 : 2.0;
+
 	return processes
 		.filter(proc => !(
 			proc.name.endsWith('-helper') ||
@@ -33,16 +36,23 @@ const filterProcesses = (input, processes, flags) => {
 			proc.name.endsWith('HelperApp')
 		))
 		.filter(flags.verbose ? filters.verbose : filters.name)
-		.sort((a, b) => numSort.asc(a.pid, b.pid))
+		.sort((a, b) => numSort.desc(a.cpu + a.memory, b.cpu + b.memory))
 		.map(proc => {
+			const renderPercentage = percents => {
+				const digits = Math.floor(percents * 10).toString().padStart(2, '0');
+				return `${digits.substr(0, digits.length - 1)}.${digits.substr(digits.length - 1)}%`;
+			};
+
 			const lineLength = process.stdout.columns || 80;
-			const ports = proc.ports.slice(0, 4).map(x => `:${x}`).join(' ').trim();
-			const margins = commandLineMargins + proc.pid.toString().length + ports.length;
+			const ports = proc.ports.length === 0 ? '' : (' ' + proc.ports.slice(0, 4).map(x => `:${x}`).join(' '));
+			const memory = (proc.memory !== undefined && (proc.memory > memoryThreshold)) ? ` MEM:${renderPercentage(proc.memory)}` : '';
+			const cpu = (proc.cpu !== undefined && (proc.cpu > cpuThreshold)) ? ` CPU:${renderPercentage(proc.cpu)}` : '';
+			const margins = commandLineMargins + proc.pid.toString().length + ports.length + memory.length + cpu.length;
 			const length = lineLength - margins;
 			const name = cliTruncate(flags.verbose && process.platform !== 'win32' ? proc.cmd : proc.name, length, {position: 'middle'});
 
 			return {
-				name: `${name} ${chalk.dim(proc.pid)} ${chalk.dim.magenta(ports)}`,
+				name: `${name} ${chalk.dim(proc.pid)}${chalk.dim.magenta(ports)}${chalk.dim.yellow(memory)}${chalk.dim.red(cpu)}`,
 				value: proc.pid
 			};
 		});
