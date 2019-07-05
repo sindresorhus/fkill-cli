@@ -46,12 +46,12 @@ if (cli.input.length === 0) {
 } else {
 	const promise = fkill(cli.input, {...cli.flags, ignoreCase: true});
 
-	if (!cli.flags.force) {
+	if (cli.flags.silent) {
 		promise.catch(error => {
-			if (cli.flags.silent) {
-				return;
-			}
-
+			return;
+		});
+	} else if (!cli.flags.force) {
+		promise.catch(error => {
 			if (/Couldn't find a process with port/.test(error.message)) {
 				console.error(error.message);
 				process.exit(1);
