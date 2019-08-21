@@ -40,12 +40,12 @@
 		"proc"
 	],
 	"dependencies": {
-		"chalk": "^2.4.2",
 		"cli-truncate": "^1.0.0",
 		"esc-exit": "^2.0.0",
 		"fkill": "^6.0.0",
 		"inquirer": "^6.2.2",
 		"inquirer-autocomplete-prompt": "^1.0.1",
+		"kleur": "^3.0.3",
 		"meow": "^5.0.0",
 		"num-sort": "^1.0.0",
 		"pid-from-port": "^1.1.1",

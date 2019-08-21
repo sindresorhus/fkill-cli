@@ -1,5 +1,5 @@
 'use strict';
-const chalk = require('chalk');
+const {dim, magenta} = require('kleur');
 const inquirer = require('inquirer');
 const psList = require('ps-list');
 const numSort = require('num-sort');
@@ -42,7 +42,7 @@ const filterProcesses = (input, processes, flags) => {
 			const name = cliTruncate(flags.verbose && process.platform !== 'win32' ? proc.cmd : proc.name, length, {position: 'middle'});
 
 			return {
-				name: `${name} ${chalk.dim(proc.pid)} ${chalk.dim.magenta(ports)}`,
+				name: `${name} ${dim(proc.pid)} ${dim(magenta(ports))}`,
 				value: proc.pid
 			};
 		});
