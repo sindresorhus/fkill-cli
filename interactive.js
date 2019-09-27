@@ -20,6 +20,33 @@ const nameFilter = (input, proc) => {
 	return proc.name.toLowerCase().includes(input.toLowerCase());
 };
 
+const preferNotMatching = matches => (a, b) => {
+	const aMatches = matches(a);
+	return (matches(b) === aMatches) ? 0 : (aMatches ? 1 : -1);
+};
+
+const deprioritizedProcesses = new Set(['iTerm', 'iTerm2']);
+const isDeprioritizedProcess = proc => deprioritizedProcesses.has(proc.name);
+const preferNotDeprioritized = preferNotMatching(isDeprioritizedProcess);
+const preferHighPerformanceImpact = (a, b) => numSort.desc(a.cpu + a.memory, b.cpu + b.memory);
+const preferLowAlphanumericNames = (a, b) => a.name.localeCompare(b.name);
+
+const preferHeurisicallyInterestingProcesses = (a, b) => {
+	let result;
+
+	result = preferNotDeprioritized(a, b);
+	if (result !== 0) {
+		return result;
+	}
+
+	result = preferHighPerformanceImpact(a, b);
+	if (result !== 0) {
+		return result;
+	}
+
+	return preferLowAlphanumericNames(a, b);
+};
+
 const filterProcesses = (input, processes, flags) => {
 	const filters = {
 		name: proc => input ? nameFilter(input, proc) : true,
@@ -36,7 +63,7 @@ const filterProcesses = (input, processes, flags) => {
 			proc.name.endsWith('HelperApp')
 		))
 		.filter(flags.verbose ? filters.verbose : filters.name)
-		.sort((a, b) => numSort.desc(a.cpu + a.memory, b.cpu + b.memory))
+		.sort(preferHeurisicallyInterestingProcesses)
 		.map(proc => {
 			const renderPercentage = percents => {
 				const digits = Math.floor(percents * 10).toString().padStart(2, '0');
@@ -45,14 +72,14 @@ const filterProcesses = (input, processes, flags) => {
 
 			const lineLength = process.stdout.columns || 80;
 			const ports = proc.ports.length === 0 ? '' : (' ' + proc.ports.slice(0, 4).map(x => `:${x}`).join(' '));
-			const memory = (proc.memory !== undefined && (proc.memory > memoryThreshold)) ? ` MEM:${renderPercentage(proc.memory)}` : '';
-			const cpu = (proc.cpu !== undefined && (proc.cpu > cpuThreshold)) ? ` CPU:${renderPercentage(proc.cpu)}` : '';
+			const memory = (proc.memory !== undefined && (proc.memory > memoryThreshold)) ? ` 🐏${renderPercentage(proc.memory)}` : '';
+			const cpu = (proc.cpu !== undefined && (proc.cpu > cpuThreshold)) ? ` ⚡${renderPercentage(proc.cpu)}` : '';
 			const margins = commandLineMargins + proc.pid.toString().length + ports.length + memory.length + cpu.length;
 			const length = lineLength - margins;
 			const name = cliTruncate(flags.verbose && process.platform !== 'win32' ? proc.cmd : proc.name, length, {position: 'middle'});
 
 			return {
-				name: `${name} ${chalk.dim(proc.pid)}${chalk.dim.magenta(ports)}${chalk.dim.yellow(memory)}${chalk.dim.red(cpu)}`,
+				name: `${name} ${chalk.dim(proc.pid)}${chalk.dim.magenta(ports)}${cpu}${memory}`,
 				value: proc.pid
 			};
 		});
