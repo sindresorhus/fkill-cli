@@ -25,7 +25,7 @@ const preferNotMatching = matches => (a, b) => {
 	return (matches(b) === aMatches) ? 0 : (aMatches ? 1 : -1);
 };
 
-const deprioritizedProcesses = new Set(['iTerm', 'iTerm2']);
+const deprioritizedProcesses = new Set(['iTerm', 'iTerm2', 'fkill']);
 const isDeprioritizedProcess = proc => deprioritizedProcesses.has(proc.name);
 const preferNotDeprioritized = preferNotMatching(isDeprioritizedProcess);
 const preferHighPerformanceImpact = (a, b) => numSort.desc(a.cpu + a.memory, b.cpu + b.memory);
@@ -53,8 +53,8 @@ const filterProcesses = (input, processes, flags) => {
 		verbose: proc => input ? (process.platform === 'win32' ? proc.name : proc.cmd).toLowerCase().includes(input.toLowerCase()) : true
 	};
 
-	const memoryThreshold = flags.verbose ? 0.0 : 0.5;
-	const cpuThreshold = flags.verbose ? 0.0 : 2.0;
+	const memoryThreshold = flags.verbose ? 0.0 : 1.0;
+	const cpuThreshold = flags.verbose ? 0.0 : 3.0;
 
 	return processes
 		.filter(proc => !(
@@ -67,19 +67,22 @@ const filterProcesses = (input, processes, flags) => {
 		.map(proc => {
 			const renderPercentage = percents => {
 				const digits = Math.floor(percents * 10).toString().padStart(2, '0');
-				return `${digits.substr(0, digits.length - 1)}.${digits.substr(digits.length - 1)}%`;
+				const whole = digits.substr(0, digits.length - 1);
+				const fraction = digits.substr(digits.length - 1);
+				return fraction === '0' ? `${whole}%` : `${whole}.${fraction}%`;
 			};
 
 			const lineLength = process.stdout.columns || 80;
 			const ports = proc.ports.length === 0 ? '' : (' ' + proc.ports.slice(0, 4).map(x => `:${x}`).join(' '));
 			const memory = (proc.memory !== undefined && (proc.memory > memoryThreshold)) ? ` 🐏${renderPercentage(proc.memory)}` : '';
-			const cpu = (proc.cpu !== undefined && (proc.cpu > cpuThreshold)) ? ` ⚡${renderPercentage(proc.cpu)}` : '';
+			const cpu = (proc.cpu !== undefined && (proc.cpu > cpuThreshold)) ? `🚦${renderPercentage(proc.cpu)}` : '';
 			const margins = commandLineMargins + proc.pid.toString().length + ports.length + memory.length + cpu.length;
 			const length = lineLength - margins;
 			const name = cliTruncate(flags.verbose && process.platform !== 'win32' ? proc.cmd : proc.name, length, {position: 'middle'});
+			const spacer = (lineLength === process.stdout.columns) ? ''.padEnd(length - name.length) : '';
 
 			return {
-				name: `${name} ${chalk.dim(proc.pid)}${chalk.dim.magenta(ports)}${cpu}${memory}`,
+				name: `${name} ${chalk.dim(proc.pid)}${spacer}${chalk.dim.magenta(ports)}${cpu}${memory}`,
 				value: proc.pid
 			};
 		});
