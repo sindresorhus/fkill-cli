@@ -22,7 +22,7 @@ const cli = meow(`
 	To kill a port, prefix it with a colon. For example: :8080.
 
 	Run without arguments to use the interactive mode.
-	In interactive mode, 🚦A.B% indicates high CPU usage, 🐏C.D% indicates high memory usage.
+	In interactive mode, 🚦n% indicates high CPU usage and 🐏n% indicates high memory usage.
 
 	The process name is case insensitive.
 `, {
@@ -54,7 +54,7 @@ if (cli.input.length === 0) {
 				return;
 			}
 
-			if (/Couldn't find a process with port/.test(error.message)) {
+			if (error.message.includes('Couldn\'t find a process with port')) {
 				console.error(error.message);
 				process.exit(1);
 			}

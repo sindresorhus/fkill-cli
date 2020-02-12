@@ -12,13 +12,11 @@
 
 Works on macOS, Linux, and Windows.
 
-
 ## Install
 
 ```
 $ npm install --global fkill-cli
 ```
-
 
 ## Usage
 
@@ -43,9 +41,10 @@ $ fkill --help
   To kill a port, prefix it with a colon. For example: :8080.
 
   Run without arguments to use the interactive interface.
+  In interactive mode, 🚦n% indicates high CPU usage and 🐏n% indicates high memory usage.
+
   The process name is case insensitive.
 ```
-
 
 ## Interactive UI
 
@@ -53,14 +52,12 @@ Run `fkill` without arguments to launch the interactive UI.
 
 ![](screenshot.svg)
 
-
 ## Related
 
 - [fkill](https://github.com/sindresorhus/fkill) - API for this module
 - [alfred-fkill](https://github.com/SamVerschueren/alfred-fkill) - Alfred workflow for this module
 
-
-## Created by
+## Maintainers
 
 - [Sindre Sorhus](https://sindresorhus.com)
 - [Daniel Baker](https://github.com/coffeedoughnuts)

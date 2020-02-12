@@ -8,16 +8,17 @@ const cliTruncate = require('cli-truncate');
 const pidFromPort = require('pid-from-port');
 const fkill = require('fkill');
 
+const isWindows = process.platform === 'win32';
 const commandLineMargins = 4;
 
-const nameFilter = (input, proc) => {
+const nameFilter = (input, process_) => {
 	const isPort = input[0] === ':';
 
 	if (isPort) {
-		return proc.ports.find(x => x.startsWith(input.slice(1)));
+		return process_.ports.find(x => x.startsWith(input.slice(1)));
 	}
 
-	return proc.name.toLowerCase().includes(input.toLowerCase());
+	return process_.name.toLowerCase().includes(input.toLowerCase());
 };
 
 const preferNotMatching = matches => (a, b) => {
@@ -26,9 +27,9 @@ const preferNotMatching = matches => (a, b) => {
 };
 
 const deprioritizedProcesses = new Set(['iTerm', 'iTerm2', 'fkill']);
-const isDeprioritizedProcess = proc => deprioritizedProcesses.has(proc.name);
+const isDeprioritizedProcess = process_ => deprioritizedProcesses.has(process_.name);
 const preferNotDeprioritized = preferNotMatching(isDeprioritizedProcess);
-const preferHighPerformanceImpact = (a, b) => numSort.desc(a.cpu + a.memory, b.cpu + b.memory);
+const preferHighPerformanceImpact = (a, b) => numSort.descending(a.cpu + a.memory, b.cpu + b.memory);
 const preferLowAlphanumericNames = (a, b) => a.name.localeCompare(b.name);
 
 const preferHeurisicallyInterestingProcesses = (a, b) => {
@@ -49,41 +50,42 @@ const preferHeurisicallyInterestingProcesses = (a, b) => {
 
 const filterProcesses = (input, processes, flags) => {
 	const filters = {
-		name: proc => input ? nameFilter(input, proc) : true,
-		verbose: proc => input ? (process.platform === 'win32' ? proc.name : proc.cmd).toLowerCase().includes(input.toLowerCase()) : true
+		name: process_ => input ? nameFilter(input, process_) : true,
+		verbose: process_ => input ? (isWindows ? process_.name : process_.cmd).toLowerCase().includes(input.toLowerCase()) : true
 	};
 
-	const memoryThreshold = flags.verbose ? 0.0 : 1.0;
-	const cpuThreshold = flags.verbose ? 0.0 : 3.0;
+	const memoryThreshold = flags.verbose ? 0 : 1;
+	const cpuThreshold = flags.verbose ? 0 : 3;
 
 	return processes
-		.filter(proc => !(
-			proc.name.endsWith('-helper') ||
-			proc.name.endsWith('Helper') ||
-			proc.name.endsWith('HelperApp')
+		.filter(process_ => !(
+			process_.name.endsWith('-helper') ||
+			process_.name.endsWith('Helper') ||
+			process_.name.endsWith('HelperApp')
 		))
 		.filter(flags.verbose ? filters.verbose : filters.name)
 		.sort(preferHeurisicallyInterestingProcesses)
-		.map(proc => {
+		.map(process_ => {
 			const renderPercentage = percents => {
 				const digits = Math.floor(percents * 10).toString().padStart(2, '0');
-				const whole = digits.substr(0, digits.length - 1);
-				const fraction = digits.substr(digits.length - 1);
+				const whole = digits.slice(0, digits.length - 1);
+				const fraction = digits.slice(digits.length - 1);
 				return fraction === '0' ? `${whole}%` : `${whole}.${fraction}%`;
 			};
 
 			const lineLength = process.stdout.columns || 80;
-			const ports = proc.ports.length === 0 ? '' : (' ' + proc.ports.slice(0, 4).map(x => `:${x}`).join(' '));
-			const memory = (proc.memory !== undefined && (proc.memory > memoryThreshold)) ? ` 🐏${renderPercentage(proc.memory)}` : '';
-			const cpu = (proc.cpu !== undefined && (proc.cpu > cpuThreshold)) ? `🚦${renderPercentage(proc.cpu)}` : '';
-			const margins = commandLineMargins + proc.pid.toString().length + ports.length + memory.length + cpu.length;
+			const ports = process_.ports.length === 0 ? '' : (' ' + process_.ports.slice(0, 4).map(x => `:${x}`).join(' '));
+			const memory = (process_.memory !== undefined && (process_.memory > memoryThreshold)) ? ` 🐏${renderPercentage(process_.memory)}` : '';
+			const cpu = (process_.cpu !== undefined && (process_.cpu > cpuThreshold)) ? `🚦${renderPercentage(process_.cpu)}` : '';
+			const margins = commandLineMargins + process_.pid.toString().length + ports.length + memory.length + cpu.length;
 			const length = lineLength - margins;
-			const name = cliTruncate(flags.verbose && process.platform !== 'win32' ? proc.cmd : proc.name, length, {position: 'middle'});
-			const spacer = lineLength === process.stdout.columns ? ''.padEnd(length - name.length) : '';
+			const name = cliTruncate(flags.verbose && !isWindows ? process_.cmd : process_.name, length, {position: 'middle', preferTruncationOnSpace: true});
+			const extraMargin = 2;
+			const spacer = lineLength === process.stdout.columns ? ''.padEnd(length - name.length - extraMargin) : '';
 
 			return {
-				name: `${name} ${chalk.dim(proc.pid)}${spacer}${chalk.dim(ports)}${cpu}${memory}`,
-				value: proc.pid
+				name: `${name} ${chalk.dim(process_.pid)}${spacer}${chalk.dim(ports)}${cpu}${memory}`,
+				value: process_.pid
 			};
 		});
 };
@@ -148,7 +150,7 @@ const init = async flags => {
 		psList({all: false})
 	]);
 
-	const procs = processes.map(proc => ({...proc, ports: getPortsFromPid(proc.pid, pids)}));
+	const procs = processes.map(process_ => ({...process_, ports: getPortsFromPid(process_.pid, pids)}));
 	listProcesses(procs, flags);
 };
 
