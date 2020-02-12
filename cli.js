@@ -21,7 +21,9 @@ const cli = meow(`
 
 	To kill a port, prefix it with a colon. For example: :8080.
 
-	Run without arguments to use the interactive interface.
+	Run without arguments to use the interactive mode.
+	In interactive mode, 🚦A.B% indicates high CPU usage, 🐏C.D% indicates high memory usage.
+
 	The process name is case insensitive.
 `, {
 	inferType: true,
