@@ -22,7 +22,7 @@ const nameFilter = (input, proc) => {
 
 const preferNotMatching = matches => (a, b) => {
 	const aMatches = matches(a);
-	return (matches(b) === aMatches) ? 0 : (aMatches ? 1 : -1);
+	return matches(b) === aMatches ? 0 : (aMatches ? 1 : -1);
 };
 
 const deprioritizedProcesses = new Set(['iTerm', 'iTerm2', 'fkill']);
