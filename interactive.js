@@ -79,10 +79,10 @@ const filterProcesses = (input, processes, flags) => {
 			const margins = commandLineMargins + proc.pid.toString().length + ports.length + memory.length + cpu.length;
 			const length = lineLength - margins;
 			const name = cliTruncate(flags.verbose && process.platform !== 'win32' ? proc.cmd : proc.name, length, {position: 'middle'});
-			const spacer = (lineLength === process.stdout.columns) ? ''.padEnd(length - name.length) : '';
+			const spacer = lineLength === process.stdout.columns ? ''.padEnd(length - name.length) : '';
 
 			return {
-				name: `${name} ${chalk.dim(proc.pid)}${spacer}${chalk.dim.magenta(ports)}${cpu}${memory}`,
+				name: `${name} ${chalk.dim(proc.pid)}${spacer}${chalk.dim(ports)}${cpu}${memory}`,
 				value: proc.pid
 			};
 		});
@@ -147,6 +147,7 @@ const init = async flags => {
 		pidFromPort.list(),
 		psList({all: false})
 	]);
+
 	const procs = processes.map(proc => ({...proc, ports: getPortsFromPid(proc.pid, pids)}));
 	listProcesses(procs, flags);
 };
