@@ -29,8 +29,26 @@ const preferNotMatching = matches => (a, b) => {
 const deprioritizedProcesses = new Set(['iTerm', 'iTerm2', 'fkill']);
 const isDeprioritizedProcess = process_ => deprioritizedProcesses.has(process_.name);
 const preferNotDeprioritized = preferNotMatching(isDeprioritizedProcess);
-const preferHighPerformanceImpact = (a, b) => numSort.descending(a.cpu + a.memory, b.cpu + b.memory);
 const preferLowAlphanumericNames = (a, b) => a.name.localeCompare(b.name);
+
+const preferHighPerformanceImpact = (a, b) => {
+	const hasCpu = typeof a.cpu === 'number' && typeof b.cpu === 'number';
+	const hasMemory = typeof a.memory === 'number' && typeof b.memory === 'number';
+
+	if (hasCpu && hasMemory) {
+		return numSort.descending(a.cpu + a.memory, b.cpu + b.memory);
+	}
+
+	if (hasCpu) {
+		return numSort.descending(a.cpu, b.cpu);
+	}
+
+	if (hasMemory) {
+		return numSort.descending(a.memory, b.memory);
+	}
+
+	return 0;
+};
 
 const preferHeurisicallyInterestingProcesses = (a, b) => {
 	let result;
