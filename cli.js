@@ -8,9 +8,10 @@ const cli = meow(`
 	  $ fkill [<pid|name|:port> …]
 
 	Options
-	  --force -f    Force kill
-	  --verbose -v  Show process arguments
-	  --silent -s   Silently kill and always exit with code 0
+	  --force, -f                        Force kill
+	  --verbose, -v                      Show process arguments
+	  --silent, -s                       Silently kill and always exit with code 0
+	  --force-after-timeout <N>, -t <N>  Force kill processes which didn't exit after N seconds
 
 	Examples
 	  $ fkill 1337
@@ -39,6 +40,10 @@ const cli = meow(`
 		silent: {
 			type: 'boolean',
 			alias: 's'
+		},
+		forceAfterTimeout: {
+			type: 'number',
+			alias: 't'
 		}
 	}
 });
@@ -46,7 +51,8 @@ const cli = meow(`
 if (cli.input.length === 0) {
 	require('./interactive').init(cli.flags);
 } else {
-	const promise = fkill(cli.input, {...cli.flags, ignoreCase: true});
+	const forceAfterTimeout = cli.flags.forceAfterTimeout === undefined ? undefined : cli.flags.forceAfterTimeout * 1000;
+	const promise = fkill(cli.input, {...cli.flags, forceAfterTimeout, ignoreCase: true});
 
 	if (!cli.flags.force) {
 		promise.catch(error => {

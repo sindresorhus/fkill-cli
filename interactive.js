@@ -7,9 +7,38 @@ const escExit = require('esc-exit');
 const cliTruncate = require('cli-truncate');
 const pidFromPort = require('pid-from-port');
 const fkill = require('fkill');
+const processExists = require('process-exists');
 
 const isWindows = process.platform === 'win32';
 const commandLineMargins = 4;
+
+const PROCESS_EXITED_MIN_INTERVAL = 5;
+const PROCESS_EXITED_MAX_INTERVAL = 1280;
+
+const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const processExited = async (pid, timeout) => {
+	const endTime = Date.now() + timeout;
+	let interval = PROCESS_EXITED_MIN_INTERVAL;
+	if (interval > timeout) {
+		interval = timeout;
+	}
+
+	let exists;
+
+	do {
+		await delay(interval); // eslint-disable-line no-await-in-loop
+
+		exists = await processExists(pid); // eslint-disable-line no-await-in-loop
+
+		interval *= 2;
+		if (interval > PROCESS_EXITED_MAX_INTERVAL) {
+			interval = PROCESS_EXITED_MAX_INTERVAL;
+		}
+	} while (Date.now() < endTime && exists);
+
+	return !exists;
+};
 
 const nameFilter = (input, process_) => {
 	const isPort = input[0] === ':';
@@ -130,6 +159,48 @@ const handleFkillError = async processes => {
 	}
 };
 
+const DEFAULT_EXIT_TIMEOUT = 3000;
+
+const performKillSequence = async processes => {
+	if (!Array.isArray(processes)) {
+		processes = [processes];
+	}
+
+	let survived;
+	let hadError;
+	try {
+		await fkill(processes);
+		const exited = await Promise.all(processes.map(process => processExited(process, DEFAULT_EXIT_TIMEOUT)));
+		survived = processes.filter((_, i) => !exited[i]);
+	} catch (error) {
+		survived = processes;
+		hadError = error;
+	}
+
+	if (survived.length > 0) {
+		const suffix = survived.length > 1 ? 'es' : '';
+		const problemText = hadError ? `Error killing process${suffix}.` : `Process${suffix} didn't exit in ${DEFAULT_EXIT_TIMEOUT}ms.`;
+
+		if (process.stdout.isTTY === false) {
+			console.error(`${problemText} Try \`fkill --force ${survived.join(' ')}\``);
+			process.exit(1); // eslint-disable-line unicorn/no-process-exit
+		} else {
+			const answer = await inquirer.prompt([{
+				type: 'confirm',
+				name: 'forceKill',
+				message: `${problemText} Would you like to use the force?`
+			}]);
+
+			if (answer.forceKill === true) {
+				await fkill(processes, {
+					force: true,
+					ignoreCase: true
+				});
+			}
+		}
+	}
+};
+
 const listProcesses = async (processes, flags) => {
 	inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
 
@@ -141,11 +212,7 @@ const listProcesses = async (processes, flags) => {
 		source: async (answers, input) => filterProcesses(input, processes, flags)
 	}]);
 
-	try {
-		await fkill(answer.processes);
-	} catch (_) {
-		handleFkillError(answer.processes);
-	}
+	performKillSequence(answer.processes);
 };
 
 const init = async flags => {
