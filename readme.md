@@ -23,27 +23,28 @@ $ npm install --global fkill-cli
 ```
 $ fkill --help
 
-  Usage
-    $ fkill [<pid|name> …]
+	Usage
+	  $ fkill [<pid|name|:port> …]
 
-  Options
-    --force -f    Force kill
-    --verbose -v  Show process arguments
-    --silent -s   Silently kill and always exit with code 0
+	Options
+	  --force, -f                  Force kill
+	  --verbose, -v                Show process arguments
+	  --silent, -s                 Silently kill and always exit with code 0
+	  --force-timeout <N>, -t <N>  Force kill processes which didn't exit after N seconds
 
-  Examples
-    $ fkill 1337
-    $ fkill safari
-    $ fkill :8080
-    $ fkill 1337 safari :8080
-    $ fkill
+	Examples
+	  $ fkill 1337
+	  $ fkill safari
+	  $ fkill :8080
+	  $ fkill 1337 safari :8080
+	  $ fkill
 
-  To kill a port, prefix it with a colon. For example: :8080.
+	To kill a port, prefix it with a colon. For example: :8080.
 
-  Run without arguments to use the interactive interface.
-  In interactive mode, 🚦n% indicates high CPU usage and 🐏n% indicates high memory usage.
+	Run without arguments to use the interactive mode.
+	In interactive mode, 🚦n% indicates high CPU usage and 🐏n% indicates high memory usage.
 
-  The process name is case insensitive.
+	The process name is case insensitive.
 ```
 
 ## Interactive UI
