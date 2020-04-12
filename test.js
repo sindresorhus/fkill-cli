@@ -36,3 +36,15 @@ test('error when process is not found', async t => {
 		/Killing process notFoundProcess failed: Process doesn't exist/
 	);
 });
+
+test('force killing process at unused port throws error', async t => {
+	await t.throwsAsync(
+		execa('./cli.js', ['--force', ':1337']),
+		/Killing process :1337 failed: Process doesn't exist/
+	);
+});
+
+test('silently force killing process at unused port exits with code 0', async t => {
+	const {code} = await execa('./cli.js', ['--force', '--silent', ':1337']);
+	t.is(code, 0);
+});
