@@ -45,7 +45,6 @@ test('force killing process at unused port throws error', async t => {
 });
 
 test('silently force killing process at unused port exits with code 0', async t => {
-	const subprocess = await execa('./cli.js', ['--force', '--silent', ':1337']);
-	console.table(subprocess);
-	t.is(subprocess.code, 0);
+	const {exitCode} = await execa('./cli.js', ['--force', '--silent', ':1337']);
+	t.is(exitCode, 0);
 });
