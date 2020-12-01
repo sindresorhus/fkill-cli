@@ -8,8 +8,6 @@
 
 > Fabulously kill processes. Cross-platform.
 
-[![Build Status](https://travis-ci.org/sindresorhus/fkill-cli.svg?branch=master)](https://travis-ci.org/sindresorhus/fkill-cli)
-
 Works on macOS, Linux, and Windows.
 
 ## Install
