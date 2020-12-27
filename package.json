@@ -1,10 +1,12 @@
 {
 	"name": "fkill-cli",
-	"version": "6.0.1",
+	"version": "6.1.0",
 	"description": "Fabulously kill processes. Cross-platform.",
 	"license": "MIT",
 	"repository": "sindresorhus/fkill-cli",
-	"funding": "https://github.com/sponsors/sindresorhus",
+	"funding": {
+		"url": "https://github.com/sponsors/sindresorhus"
+	},
 	"author": {
 		"name": "Sindre Sorhus",
 		"email": "sindresorhus@gmail.com",
