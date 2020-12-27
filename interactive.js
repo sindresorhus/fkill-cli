@@ -5,7 +5,7 @@ const psList = require('ps-list');
 const numSort = require('num-sort');
 const escExit = require('esc-exit');
 const cliTruncate = require('cli-truncate');
-const pidFromPort = require('pid-from-port');
+const pidFromPort = require('pid-port');
 const fkill = require('fkill');
 
 const isWindows = process.platform === 'win32';
@@ -81,13 +81,14 @@ const filterProcesses = (input, processes, flags) => {
 			process_.name.endsWith('Helper') ||
 			process_.name.endsWith('HelperApp')
 		))
+		// eslint-disable-next-line unicorn/no-fn-reference-in-iterator
 		.filter(flags.verbose ? filters.verbose : filters.name)
 		.sort(preferHeurisicallyInterestingProcesses)
 		.map(process_ => {
 			const renderPercentage = percents => {
 				const digits = Math.floor(percents * 10).toString().padStart(2, '0');
-				const whole = digits.slice(0, digits.length - 1);
-				const fraction = digits.slice(digits.length - 1);
+				const whole = digits.slice(0, -1);
+				const fraction = digits.slice(-1);
 				return fraction === '0' ? `${whole}%` : `${whole}.${fraction}%`;
 			};
 
@@ -143,7 +144,7 @@ const listProcesses = async (processes, flags) => {
 
 	try {
 		await fkill(answer.processes);
-	} catch (_) {
+	} catch {
 		handleFkillError(answer.processes);
 	}
 };
@@ -164,7 +165,7 @@ const init = async flags => {
 	};
 
 	const [pids, processes] = await Promise.all([
-		pidFromPort.list(),
+		pidFromPort.all(),
 		psList({all: false})
 	]);
 
