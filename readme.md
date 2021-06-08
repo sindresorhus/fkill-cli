@@ -10,6 +10,36 @@
 
 Works on macOS, Linux, and Windows.
 
+<br>
+
+---
+
+<div align="center">
+	<p>
+		<p>
+			<sup>
+				<a href="https://github.com/sponsors/sindresorhus">My open source work is supported by the community</a>
+			</sup>
+		</p>
+		<sup>Special thanks to:</sup>
+		<br>
+		<br>
+		<a href="https://bit.io/?utm_campaign=github_repo&utm_medium=referral&utm_content=fkill-cli&utm_source=github">
+			<div>
+				<img src="https://sindresorhus.com/assets/thanks/bitio-logo.svg" width="190" alt="bit.io">
+			</div>
+			<b>Instant, shareable cloud PostgreSQL database</b>
+			<div>
+				<sup>Import any dataset in seconds, share with anyone with a click, try without signing up</sup>
+			</div>
+		</a>
+	</p>
+</div>
+
+---
+
+<br>
+
 ## Install
 
 ```
@@ -21,27 +51,27 @@ $ npm install --global fkill-cli
 ```
 $ fkill --help
 
-  Usage
-    $ fkill [<pid|name> …]
+	Usage
+		$ fkill [<pid|name> …]
 
-  Options
-    --force -f    Force kill
-    --verbose -v  Show process arguments
-    --silent -s   Silently kill and always exit with code 0
+	Options
+		--force -f    Force kill
+		--verbose -v  Show process arguments
+		--silent -s   Silently kill and always exit with code 0
 
-  Examples
-    $ fkill 1337
-    $ fkill safari
-    $ fkill :8080
-    $ fkill 1337 safari :8080
-    $ fkill
+	Examples
+		$ fkill 1337
+		$ fkill safari
+		$ fkill :8080
+		$ fkill 1337 safari :8080
+		$ fkill
 
-  To kill a port, prefix it with a colon. For example: :8080.
+	To kill a port, prefix it with a colon. For example: :8080.
 
-  Run without arguments to use the interactive interface.
-  In interactive mode, 🚦n% indicates high CPU usage and 🐏n% indicates high memory usage.
+	Run without arguments to use the interactive interface.
+	In interactive mode, 🚦n% indicates high CPU usage and 🐏n% indicates high memory usage.
 
-  The process name is case insensitive.
+	The process name is case insensitive.
 ```
 
 ## Interactive UI
