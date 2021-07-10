@@ -52,12 +52,13 @@ $ npm install --global fkill-cli
 $ fkill --help
 
 	Usage
-		$ fkill [<pid|name> …]
+		$ fkill [<pid|name|:port> …]
 
 	Options
-		--force -f    Force kill
-		--verbose -v  Show process arguments
-		--silent -s   Silently kill and always exit with code 0
+		--force, -f                  Force kill
+		--verbose, -v                Show process arguments
+		--silent, -s                 Silently kill and always exit with code 0
+		--force-timeout <N>, -t <N>  Force kill processes which didn't exit after N seconds
 
 	Examples
 		$ fkill 1337
