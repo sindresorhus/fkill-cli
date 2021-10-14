@@ -42,8 +42,8 @@ Works on macOS, Linux, and Windows.
 
 ## Install
 
-```
-$ npm install --global fkill-cli
+```sh
+npm install --global fkill-cli
 ```
 
 ## Usage

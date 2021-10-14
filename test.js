@@ -1,4 +1,4 @@
-import childProcess from 'child_process';
+import childProcess from 'node:child_process';
 import test from 'ava';
 import execa from 'execa';
 import delay from 'delay';
@@ -33,14 +33,14 @@ test('kill from port', async t => {
 test('error when process is not found', async t => {
 	await t.throwsAsync(
 		execa('./cli.js', ['--force', 'notFoundProcess']),
-		/Killing process notFoundProcess failed: Process doesn't exist/
+		{message: /Killing process notFoundProcess failed: Process doesn't exist/},
 	);
 });
 
 test('force killing process at unused port throws error', async t => {
 	await t.throwsAsync(
 		execa('./cli.js', ['--force', ':1337']),
-		/Killing process :1337 failed: Process doesn't exist/
+		{message: /Killing process :1337 failed: Process doesn't exist/},
 	);
 });
 

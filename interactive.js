@@ -1,13 +1,14 @@
-'use strict';
-const chalk = require('chalk');
-const inquirer = require('inquirer');
-const psList = require('ps-list');
-const numSort = require('num-sort');
-const escExit = require('esc-exit');
-const cliTruncate = require('cli-truncate');
-const pidFromPort = require('pid-port');
-const fkill = require('fkill');
-const processExists = require('process-exists');
+import process from 'node:process';
+import chalk from 'chalk';
+import inquirer from 'inquirer';
+import inquirerAutocompletePrompt from 'inquirer-autocomplete-prompt';
+import psList from 'ps-list';
+import {numberSortDescending} from 'num-sort';
+import escExit from 'esc-exit';
+import cliTruncate from 'cli-truncate';
+import {allPortsWithPid} from 'pid-port';
+import fkill from 'fkill';
+import processExists from 'process-exists';
 
 const isWindows = process.platform === 'win32';
 const commandLineMargins = 4;
@@ -46,7 +47,7 @@ const nameFilter = (input, process_) => {
 	const isPort = input[0] === ':';
 
 	if (isPort) {
-		return process_.ports.find(x => x.startsWith(input.slice(1)));
+		return process_.ports.find(port => port.startsWith(input.slice(1)));
 	}
 
 	return process_.name.toLowerCase().includes(input.toLowerCase());
@@ -67,15 +68,15 @@ const preferHighPerformanceImpact = (a, b) => {
 	const hasMemory = typeof a.memory === 'number' && typeof b.memory === 'number';
 
 	if (hasCpu && hasMemory) {
-		return numSort.descending(a.cpu + a.memory, b.cpu + b.memory);
+		return numberSortDescending(a.cpu + a.memory, b.cpu + b.memory);
 	}
 
 	if (hasCpu) {
-		return numSort.descending(a.cpu, b.cpu);
+		return numberSortDescending(a.cpu, b.cpu);
 	}
 
 	if (hasMemory) {
-		return numSort.descending(a.memory, b.memory);
+		return numberSortDescending(a.memory, b.memory);
 	}
 
 	return 0;
@@ -100,7 +101,7 @@ const preferHeurisicallyInterestingProcesses = (a, b) => {
 const filterProcesses = (input, processes, flags) => {
 	const filters = {
 		name: process_ => input ? nameFilter(input, process_) : true,
-		verbose: process_ => input ? (isWindows ? process_.name : process_.cmd).toLowerCase().includes(input.toLowerCase()) : true
+		verbose: process_ => input ? (isWindows ? process_.name : process_.cmd).toLowerCase().includes(input.toLowerCase()) : true,
 	};
 
 	const memoryThreshold = flags.verbose ? 0 : 1;
@@ -108,11 +109,11 @@ const filterProcesses = (input, processes, flags) => {
 
 	return processes
 		.filter(process_ => !(
-			process_.name.endsWith('-helper') ||
-			process_.name.endsWith('Helper') ||
-			process_.name.endsWith('HelperApp')
+			process_.name.endsWith('-helper')
+			|| process_.name.endsWith('Helper')
+			|| process_.name.endsWith('HelperApp')
 		))
-		// eslint-disable-next-line unicorn/no-fn-reference-in-iterator
+		// eslint-disable-next-line unicorn/no-array-callback-reference
 		.filter(flags.verbose ? filters.verbose : filters.name)
 		.sort(preferHeurisicallyInterestingProcesses)
 		.map(process_ => {
@@ -135,7 +136,7 @@ const filterProcesses = (input, processes, flags) => {
 
 			return {
 				name: `${name} ${chalk.dim(process_.pid)}${spacer}${chalk.dim(ports)}${cpu}${memory}`,
-				value: process_.pid
+				value: process_.pid,
 			};
 		});
 };
@@ -150,13 +151,13 @@ const handleFkillError = async processes => {
 		const answer = await inquirer.prompt([{
 			type: 'confirm',
 			name: 'forceKill',
-			message: 'Error killing process. Would you like to use the force?'
+			message: 'Error killing process. Would you like to use the force?',
 		}]);
 
 		if (answer.forceKill === true) {
 			await fkill(processes, {
 				force: true,
-				ignoreCase: true
+				ignoreCase: true,
 			});
 		}
 	}
@@ -195,7 +196,7 @@ const performKillSequence = async processes => {
 	const answer = await inquirer.prompt([{
 		type: 'confirm',
 		name: 'forceKill',
-		message: `${problemText} Would you like to use the force?`
+		message: `${problemText} Would you like to use the force?`,
 	}]);
 
 	if (!answer.forceKill) {
@@ -204,19 +205,19 @@ const performKillSequence = async processes => {
 
 	await fkill(processes, {
 		force: true,
-		ignoreCase: true
+		ignoreCase: true,
 	});
 };
 
 const listProcesses = async (processes, flags) => {
-	inquirer.registerPrompt('autocomplete', require('inquirer-autocomplete-prompt'));
+	inquirer.registerPrompt('autocomplete', inquirerAutocompletePrompt);
 
 	const answer = await inquirer.prompt([{
 		name: 'processes',
 		message: 'Running processes:',
 		type: 'autocomplete',
 		pageSize: 10,
-		source: async (answers, input) => filterProcesses(input, processes, flags)
+		source: async (answers, input) => filterProcesses(input, processes, flags),
 	}]);
 
 	performKillSequence(answer.processes);
@@ -238,12 +239,12 @@ const init = async flags => {
 	};
 
 	const [pids, processes] = await Promise.all([
-		pidFromPort.all(),
-		psList({all: false})
+		allPortsWithPid(),
+		psList({all: false}),
 	]);
 
 	const procs = processes.map(process_ => ({...process_, ports: getPortsFromPid(process_.pid, pids)}));
 	listProcesses(procs, flags);
 };
 
-module.exports = {init, handleFkillError};
+export {init, handleFkillError};

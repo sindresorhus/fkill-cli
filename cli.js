@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-'use strict';
-const meow = require('meow');
-const fkill = require('fkill');
+import process from 'node:process';
+import meow from 'meow';
+import fkill from 'fkill';
 
 const cli = meow(`
 	Usage
@@ -27,45 +27,52 @@ const cli = meow(`
 
 	The process name is case insensitive.
 `, {
+	importMeta: import.meta,
 	inferType: true,
 	flags: {
 		force: {
 			type: 'boolean',
-			alias: 'f'
+			alias: 'f',
 		},
 		verbose: {
 			type: 'boolean',
-			alias: 'v'
+			alias: 'v',
 		},
 		silent: {
 			type: 'boolean',
-			alias: 's'
+			alias: 's',
 		},
 		forceAfterTimeout: {
 			type: 'number',
-			alias: 't'
-		}
-	}
+			alias: 't',
+		},
+	},
 });
 
-if (cli.input.length === 0) {
-	require('./interactive').init(cli.flags);
-} else {
-	const forceAfterTimeout = cli.flags.forceAfterTimeout === undefined ? undefined : cli.flags.forceAfterTimeout * 1000;
-	const promise = fkill(cli.input, {...cli.flags, forceAfterTimeout, ignoreCase: true});
+(async () => {
+	if (cli.input.length === 0) {
+		// eslint-disable-next-line node/no-unsupported-features/es-syntax
+		(await import('./interactive.js')).init(cli.flags);
+	} else {
+		const forceAfterTimeout = cli.flags.forceAfterTimeout === undefined ? undefined : cli.flags.forceAfterTimeout * 1000;
+		const promise = fkill(cli.input, {...cli.flags, forceAfterTimeout, ignoreCase: true});
 
-	if (!cli.flags.force) {
-		promise.catch(error => {
-			if (cli.flags.silent) {
-				return;
+		if (!cli.flags.force) {
+			try {
+				await promise;
+			} catch (error) {
+				if (cli.flags.silent) {
+					return;
+				}
+
+				if (error.message.includes('Could not find a process with port')) {
+					console.error(error.message);
+					process.exit(1);
+				}
+
+				// eslint-disable-next-line node/no-unsupported-features/es-syntax
+				(await import('./interactive.js')).handleFkillError(cli.input);
 			}
-
-			if (error.message.includes('Couldn\'t find a process with port')) {
-				console.error(error.message);
-				process.exit(1);
-			}
-
-			return require('./interactive').handleFkillError(cli.input);
-		});
+		}
 	}
-}
+})();
