@@ -23,6 +23,12 @@ test('pid', async t => {
 	await noopProcessKilled(t, pid);
 });
 
+test('fuzzy search', async t => {
+	const pid = await noopProcess({title: 'noo00oop'});
+	await execa('./cli.js', ['o00oo']);
+	await noopProcessKilled(t, pid);
+});
+
 test('kill from port', async t => {
 	const port = await getPort();
 	const {pid} = childProcess.spawn('node', ['fixture.js', port]);
