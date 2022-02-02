@@ -44,16 +44,6 @@ const processExited = async (pid, timeout) => {
 	return !exists;
 };
 
-const nameFilter = (input, process_) => {
-	const isPort = input[0] === ':';
-
-	if (isPort) {
-		return process_.ports.find(port => port.startsWith(input.slice(1)));
-	}
-
-	return process_.name.toLowerCase().includes(input.toLowerCase());
-};
-
 const preferNotMatching = matches => (a, b) => {
 	const aMatches = matches(a);
 	return matches(b) === aMatches ? 0 : (aMatches ? 1 : -1);
@@ -102,11 +92,11 @@ const preferHeurisicallyInterestingProcesses = (a, b) => {
 const filterProcesses = (input, processes, flags) => {
 	const memoryThreshold = flags.verbose ? 0 : 1;
 	const cpuThreshold = flags.verbose ? 0 : 3;
-	const fuzzySearchOption = { caseSensitive: false };
+	const fuzzySearchOption = {caseSensitive: false};
 
-	const filtered = flags.verbose ?
-		new FuzzySearch(processes, [isWindows ? 'name' : 'cmd'], fuzzySearchOption).search(input) :
-		new FuzzySearch(processes, ['name'], fuzzySearchOption).search(input);
+	const filtered = flags.verbose
+		? new FuzzySearch(processes, [isWindows ? 'name' : 'cmd'], fuzzySearchOption).search(input)
+		: new FuzzySearch(processes, ['name'], fuzzySearchOption).search(input);
 
 	return filtered
 		.filter(process_ => !(
