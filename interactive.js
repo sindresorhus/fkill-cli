@@ -94,9 +94,11 @@ const filterProcesses = (input, processes, flags) => {
 	const cpuThreshold = flags.verbose ? 0 : 3;
 	const fuzzySearchOption = {caseSensitive: false};
 
-	const filteredProcesses = flags.verbose
-		? new FuzzySearch(processes, [isWindows ? 'name' : 'cmd'], fuzzySearchOption).search(input)
-		: new FuzzySearch(processes, ['name'], fuzzySearchOption).search(input);
+	const filteredProcesses = new FuzzySearch(
+		processes,
+		flags.verbose ? [isWindows ? 'name' : 'cmd'] : ['name'],
+		fuzzySearchOption)
+		.search(input);
 
 	return filteredProcesses
 		.filter(process_ => !(
