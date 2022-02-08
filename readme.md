@@ -73,6 +73,7 @@ $ fkill --help
 	In interactive mode, 🚦n% indicates high CPU usage and 🐏n% indicates high memory usage.
 
 	The process name is case insensitive.
+	Support fuzzy search.
 ```
 
 ## Interactive UI
