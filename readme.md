@@ -71,9 +71,9 @@ $ fkill --help
 
 	Run without arguments to use the interactive interface.
 	In interactive mode, 🚦n% indicates high CPU usage and 🐏n% indicates high memory usage.
+	Support fuzzy search in the interactive mode.
 
 	The process name is case insensitive.
-	Support fuzzy search.
 ```
 
 ## Interactive UI
