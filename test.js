@@ -24,8 +24,8 @@ test('pid', async t => {
 });
 
 test('fuzzy search', async t => {
-	const pid = await noopProcess({title: 'noo00oop'});
-	await execa('./cli.js', ['o00oo']);
+	const pid = await noopProcess({title: '!noo00oop@'});
+	await execa('./cli.js', ['o00oop@']);
 	await noopProcessKilled(t, pid);
 });
 
