@@ -92,12 +92,14 @@ const preferHeurisicallyInterestingProcesses = (a, b) => {
 const filterProcesses = (input, processes, flags) => {
 	const memoryThreshold = flags.verbose ? 0 : 1;
 	const cpuThreshold = flags.verbose ? 0 : 3;
-	const fuzzySearchOption = {caseSensitive: false};
 
 	const filteredProcesses = new FuzzySearch(
 		processes,
 		flags.verbose ? [isWindows ? 'name' : 'cmd'] : ['name'],
-		fuzzySearchOption)
+		{
+			caseSensitive: false
+		}
+	)
 		.search(input);
 
 	return filteredProcesses
