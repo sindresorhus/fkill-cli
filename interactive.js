@@ -97,8 +97,8 @@ const filterProcesses = (input, processes, flags) => {
 		processes,
 		flags.verbose ? [isWindows ? 'name' : 'cmd'] : ['name'],
 		{
-			caseSensitive: false
-		}
+			caseSensitive: false,
+		},
 	)
 		.search(input);
 
