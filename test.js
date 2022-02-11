@@ -24,7 +24,7 @@ test('pid', async t => {
 	await noopProcessKilled(t, pid);
 });
 
-// To do:: Remove below if statement after this https://github.com/nodejs/node/issues/35503 Node issue is resolved.
+// TODO: Remove the if-statement when https://github.com/nodejs/node/issues/35503 is fixed.
 if (process.platform === 'darwin') {
 	test('fuzzy search', async t => {
 		const pid = await noopProcess({title: '!noo00oop@'});
