@@ -1,3 +1,4 @@
+import process from 'node:process';
 import childProcess from 'node:child_process';
 import test from 'ava';
 import execa from 'execa';
