@@ -23,11 +23,14 @@ test('pid', async t => {
 	await noopProcessKilled(t, pid);
 });
 
-test('fuzzy search', async t => {
-	const pid = await noopProcess({title: '!noo00oop@'});
-	await execa('./cli.js', ['o00oop@']);
-	await noopProcessKilled(t, pid);
-});
+// To do:: Remove below if statement after this https://github.com/nodejs/node/issues/35503 Node issue is resolved.
+if (process.platform === 'darwin') {
+	test('fuzzy search', async t => {
+		const pid = await noopProcess({title: '!noo00oop@'});
+		await execa('./cli.js', ['o00oop@']);
+		await noopProcessKilled(t, pid);
+	});
+}
 
 test('kill from port', async t => {
 	const port = await getPort();
