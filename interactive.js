@@ -9,6 +9,7 @@ import cliTruncate from 'cli-truncate';
 import {allPortsWithPid} from 'pid-port';
 import fkill from 'fkill';
 import processExists from 'process-exists';
+import FuzzySearch from 'fuzzy-search';
 
 const isWindows = process.platform === 'win32';
 const commandLineMargins = 4;
@@ -41,16 +42,6 @@ const processExited = async (pid, timeout) => {
 	} while (Date.now() < endTime && exists);
 
 	return !exists;
-};
-
-const nameFilter = (input, process_) => {
-	const isPort = input[0] === ':';
-
-	if (isPort) {
-		return process_.ports.find(port => port.startsWith(input.slice(1)));
-	}
-
-	return process_.name.toLowerCase().includes(input.toLowerCase());
 };
 
 const preferNotMatching = matches => (a, b) => {
@@ -99,22 +90,24 @@ const preferHeurisicallyInterestingProcesses = (a, b) => {
 };
 
 const filterProcesses = (input, processes, flags) => {
-	const filters = {
-		name: process_ => input ? nameFilter(input, process_) : true,
-		verbose: process_ => input ? (isWindows ? process_.name : process_.cmd).toLowerCase().includes(input.toLowerCase()) : true,
-	};
-
 	const memoryThreshold = flags.verbose ? 0 : 1;
 	const cpuThreshold = flags.verbose ? 0 : 3;
 
-	return processes
+	const filteredProcesses = new FuzzySearch(
+		processes,
+		[flags.verbose && !isWindows ? 'cmd' : 'name'],
+		{
+			caseSensitive: false,
+		},
+	)
+		.search(input);
+
+	return filteredProcesses
 		.filter(process_ => !(
 			process_.name.endsWith('-helper')
 			|| process_.name.endsWith('Helper')
 			|| process_.name.endsWith('HelperApp')
 		))
-		// eslint-disable-next-line unicorn/no-array-callback-reference
-		.filter(flags.verbose ? filters.verbose : filters.name)
 		.sort(preferHeurisicallyInterestingProcesses)
 		.map(process_ => {
 			const renderPercentage = percents => {
