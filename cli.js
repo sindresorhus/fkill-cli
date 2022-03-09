@@ -1,7 +1,12 @@
 #!/usr/bin/env node
+import React from 'react';
 import process from 'node:process';
 import meow from 'meow';
 import fkill from 'fkill';
+import {render} from 'ink';
+import {listAllProcesses} from './utils.js';
+import {InteractiveUI} from './interactive.js';
+import {Modal} from './modal.js';
 
 const cli = meow(`
 	Usage
@@ -52,8 +57,9 @@ const cli = meow(`
 
 (async () => {
 	if (cli.input.length === 0) {
-		// eslint-disable-next-line node/no-unsupported-features/es-syntax
-		(await import('./interactive.js')).init(cli.flags);
+		const processes = await listAllProcesses();
+		const app = render(<InteractiveUI processes={processes} flags={cli.flags} />);
+		await app.waitUntilExit();
 	} else {
 		const forceAfterTimeout = cli.flags.forceAfterTimeout === undefined ? undefined : cli.flags.forceAfterTimeout * 1000;
 		const promise = fkill(cli.input, {...cli.flags, forceAfterTimeout, ignoreCase: true});
@@ -71,8 +77,35 @@ const cli = meow(`
 					process.exit(1);
 				}
 
-				// eslint-disable-next-line node/no-unsupported-features/es-syntax
-				(await import('./interactive.js')).handleFkillError(cli.input);
+				const modalSelectHandler = async (answer) => {
+					const processes = cli.input;
+					const suffix = processes.length > 1 ? 'es' : '';
+
+					if (process.stdout.isTTY === false) {
+						console.error(`Error killing process${suffix}. Try \`fkill --force ${processes.join(' ')}\``);
+						process.exit(1); // eslint-disable-line unicorn/no-process-exit
+					}
+
+					if (answer === 'Y') {
+						await fkill(processes, {
+							force: true,
+							ignoreCase: true,
+						});
+					}
+
+					process.exit(0); // eslint-disable-line unicorn/no-process-exit
+				};
+
+				const modal = render(
+					<Modal
+						opened={true}
+						inputPlaceholder={'(Y/n)'}
+						message={'Error killing process. Would you like to use the force?'}
+						selectHandler={modalSelectHandler}
+					/>
+				);
+
+				await modal.waitUntilExit();
 			}
 		}
 	}
