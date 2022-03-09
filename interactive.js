@@ -63,7 +63,7 @@ const InteractiveUI = ({processes, flags}) => {
 		}
 
 		const suffix = didSurvive.length > 1 ? 'es' : '';
-		const problemText = hadError ? `Error killing process${suffix}. ` : `Process${suffix} didn't exit in ${DEFAULT_EXIT_TIMEOUT}ms.`;
+		const problemText = hadError ? `Error killing process${suffix}.` : `Process${suffix} didn't exit in ${DEFAULT_EXIT_TIMEOUT}ms.`;
 
 		if (process.stdout.isTTY === false) {
 			console.error(`${problemText} Try \`fkill --force ${didSurvive.join(' ')}\``);
