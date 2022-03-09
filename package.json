@@ -12,7 +12,7 @@
 	},
 	"type": "module",
 	"bin": {
-		"fkill": "cli.js"
+		"fkill": "./dist/cli.js"
 	},
 	"engines": {
 		"node": "^14.13.1 || >=16.0.0"
@@ -22,8 +22,7 @@
 		"build": "babel ./*.js --out-dir dist"
 	},
 	"files": [
-		"cli.js",
-		"interactive.js"
+		"./dist/*.js"
 	],
 	"keywords": [
 		"cli-app",
