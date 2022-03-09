@@ -100,7 +100,7 @@ const cli = meow(`
 					<Modal
 						opened
 						inputPlaceholder="(Y/n)"
-						message="Error killing process. Would you like to use the force?"
+						message="Error killing process. Would you like to use the force? "
 						selectHandler={modalSelectHandler}
 					/>,
 				);
