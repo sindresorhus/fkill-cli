@@ -6,7 +6,7 @@ import escExit from 'esc-exit';
 import fkill from 'fkill';
 import hasAnsi from 'has-ansi';
 import {processExited, filterProcesses} from './utils.js';
-import {Modal} from './modal.js';
+import {Dialog} from './dialog.js';
 
 const require = createRequire(import.meta.url);
 const TextInput = require('ink-text-input').default;
@@ -20,7 +20,7 @@ const InteractiveUI = ({processes, flags}) => {
 	const [query, setQuery] = useState('');
 	const [retrievedProcesses, setRetrievedProcesses] = useState(filterProcesses('', processes, flags));
 	const [message, setMessage] = useState('');
-	const [modalOpened, setModalOpened] = useState(false);
+	const [confirmDialogOpened, setConfirmDialogOpened] = useState(false);
 	const [survivedProcesses, setSurvivedProcesses] = useState([]);
 	const [killingExecuting, setKillingExecuting] = useState(false);
 
@@ -70,7 +70,7 @@ const InteractiveUI = ({processes, flags}) => {
 			process.exit(1);
 		} else {
 			setMessage(problemText + ' ');
-			setModalOpened(true);
+			setConfirmDialogOpened(true);
 			setSurvivedProcesses(didSurvive);
 		}
 	};
@@ -105,8 +105,8 @@ const InteractiveUI = ({processes, flags}) => {
 			return (
 				<TextInput
 					value={query}
-					focus={!modalOpened && !killingExecuting}
-					placeholder="Use arrow keys or type to search"
+					focus={!confirmDialogOpened && !killingExecuting}
+					placeholder="(Use arrow keys or type to search)"
 					onChange={textChangeHandler}
 				/>
 			);
@@ -133,7 +133,7 @@ const InteractiveUI = ({processes, flags}) => {
 	const renderIndicator = ({isSelected}) => <Text color="#00FFFF">{isSelected ? '❯' : ' '} </Text>;
 
 	const renderProcessList = () => {
-		if (modalOpened || killingExecuting) {
+		if (confirmDialogOpened || killingExecuting) {
 			return null;
 		}
 
@@ -154,7 +154,7 @@ const InteractiveUI = ({processes, flags}) => {
 	};
 
 	const renderFooter = () => {
-		if (modalOpened || killingExecuting || retrievedProcesses.length === 0) {
+		if (confirmDialogOpened || killingExecuting || retrievedProcesses.length === 0) {
 			return null;
 		}
 
@@ -171,8 +171,8 @@ const InteractiveUI = ({processes, flags}) => {
 			{renderProcessList()}
 			{renderFooter()}
 
-			<Modal
-				opened={modalOpened}
+			<Dialog
+				opened={confirmDialogOpened}
 				inputPlaceholder="(Y/n)"
 				message={message}
 				selectHandler={killProcessForce}

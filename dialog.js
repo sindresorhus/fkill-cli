@@ -5,7 +5,7 @@ import {Box, Text} from 'ink';
 const require = createRequire(import.meta.url);
 const TextInput = require('ink-text-input').default;
 
-const Modal = ({opened, inputPlaceholder, message, selectHandler}) => {
+const Dialog = ({opened, inputPlaceholder, message, selectHandler}) => {
 	const [query, setQuery] = useState('');
 
 	if (!opened) {
@@ -29,4 +29,4 @@ const Modal = ({opened, inputPlaceholder, message, selectHandler}) => {
 	);
 };
 
-export {Modal};
+export {Dialog};
