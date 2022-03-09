@@ -6,7 +6,7 @@ import fkill from 'fkill';
 import {render} from 'ink';
 import {listAllProcesses} from './utils.js';
 import {InteractiveUI} from './interactive.js';
-import {Modal} from './modal.js';
+import {Dialog} from './dialog.js';
 
 const cli = meow(`
 	Usage
@@ -96,16 +96,14 @@ const cli = meow(`
 					process.exit(0);
 				};
 
-				const modal = render(
-					<Modal
+				await render(
+					<Dialog
 						opened
 						inputPlaceholder="(Y/n)"
 						message="Error killing process. Would you like to use the force? "
 						selectHandler={modalSelectHandler}
 					/>,
-				);
-
-				await modal.waitUntilExit();
+				).waitUntilExit();
 			}
 		}
 	}
