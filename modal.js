@@ -1,28 +1,32 @@
-import React, { useState } from 'react';
+import {createRequire} from 'node:module';
+import React, {useState} from 'react';
 import {Box, Text} from 'ink';
-import { createRequire } from 'node:module';
+
 const require = createRequire(import.meta.url);
 const TextInput = require('ink-text-input').default;
 
 const Modal = ({opened, inputPlaceholder, message, selectHandler}) => {
 	const [query, setQuery] = useState('');
 
-	if (!opened) return <></>;
+	if (!opened) {
+		return null;
+	}
+
 	return (
 		<Box marginTop={1} marginRight={1}>
 			<Text bold>
-				<Text color="green">{`? `}</Text>
+				<Text color="green">{'? '}</Text>
 				<Text>{message}</Text>
 			</Text>
 
 			<TextInput
 				value={query}
-				onChange={setQuery}
 				placeholder={inputPlaceholder}
+				onChange={setQuery}
 				onSubmit={() => selectHandler(query)}
 			/>
 		</Box>
 	);
 };
 
-export { Modal };
+export {Modal};

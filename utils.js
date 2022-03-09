@@ -1,3 +1,4 @@
+import process from 'node:process';
 import psList from 'ps-list';
 import {allPortsWithPid} from 'pid-port';
 import chalk from 'chalk';
@@ -130,24 +131,24 @@ const filterProcesses = (input, processes, flags) => {
 };
 
 const listAllProcesses = async () => {
-  const getPortsFromPid = (value, list) => {
-    const ports = [];
+	const getPortsFromPid = (value, list) => {
+		const ports = [];
 
-    for (const [key, listValue] of list.entries()) {
-      if (value === listValue) {
-        ports.push(String(key));
-      }
-    }
+		for (const [key, listValue] of list.entries()) {
+			if (value === listValue) {
+				ports.push(String(key));
+			}
+		}
 
-    return ports;
-  };
+		return ports;
+	};
 
-  const [pids, processes] = await Promise.all([
-    allPortsWithPid(),
-    psList({all: false}),
-  ]);
+	const [pids, processes] = await Promise.all([
+		allPortsWithPid(),
+		psList({all: false}),
+	]);
 
-  return processes.map(process_ => ({...process_, ports: getPortsFromPid(process_.pid, pids)}));
+	return processes.map(process_ => ({...process_, ports: getPortsFromPid(process_.pid, pids)}));
 };
 
 export {

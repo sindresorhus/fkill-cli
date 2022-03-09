@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-import React from 'react';
 import process from 'node:process';
+import React from 'react';
 import meow from 'meow';
 import fkill from 'fkill';
 import {render} from 'ink';
@@ -58,7 +58,7 @@ const cli = meow(`
 (async () => {
 	if (cli.input.length === 0) {
 		const processes = await listAllProcesses();
-		const app = render(<InteractiveUI processes={processes} flags={cli.flags} />);
+		const app = render(<InteractiveUI processes={processes} flags={cli.flags}/>);
 		await app.waitUntilExit();
 	} else {
 		const forceAfterTimeout = cli.flags.forceAfterTimeout === undefined ? undefined : cli.flags.forceAfterTimeout * 1000;
@@ -77,13 +77,13 @@ const cli = meow(`
 					process.exit(1);
 				}
 
-				const modalSelectHandler = async (answer) => {
+				const modalSelectHandler = async answer => {
 					const processes = cli.input;
 					const suffix = processes.length > 1 ? 'es' : '';
 
 					if (process.stdout.isTTY === false) {
 						console.error(`Error killing process${suffix}. Try \`fkill --force ${processes.join(' ')}\``);
-						process.exit(1); // eslint-disable-line unicorn/no-process-exit
+						process.exit(1);
 					}
 
 					if (answer === 'Y') {
@@ -93,16 +93,16 @@ const cli = meow(`
 						});
 					}
 
-					process.exit(0); // eslint-disable-line unicorn/no-process-exit
+					process.exit(0);
 				};
 
 				const modal = render(
 					<Modal
-						opened={true}
-						inputPlaceholder={'(Y/n)'}
-						message={'Error killing process. Would you like to use the force?'}
+						opened
+						inputPlaceholder="(Y/n)"
+						message="Error killing process. Would you like to use the force?"
 						selectHandler={modalSelectHandler}
-					/>
+					/>,
 				);
 
 				await modal.waitUntilExit();

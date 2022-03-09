@@ -1,12 +1,13 @@
+import process from 'node:process';
+import {createRequire} from 'node:module';
 import React, {useState, useEffect} from 'react';
 import {Box, Text} from 'ink';
-import process from 'node:process';
 import escExit from 'esc-exit';
 import fkill from 'fkill';
 import hasAnsi from 'has-ansi';
 import {processExited, filterProcesses} from './utils.js';
-import { Modal } from './modal.js';
-import { createRequire } from 'node:module';
+import {Modal} from './modal.js';
+
 const require = createRequire(import.meta.url);
 const TextInput = require('ink-text-input').default;
 const SelectInput = require('ink-select-input').default;
@@ -16,8 +17,8 @@ const DEFAULT_EXIT_TIMEOUT = 3000;
 const PROCESS_LIST_MAX_COUNT = 10;
 
 const InteractiveUI = ({processes, flags}) => {
-  const [query, setQuery] = useState('');
-  const [retrievedProcesses, setRetrievedProcesses] = useState(filterProcesses('', processes, flags));
+	const [query, setQuery] = useState('');
+	const [retrievedProcesses, setRetrievedProcesses] = useState(filterProcesses('', processes, flags));
 	const [message, setMessage] = useState('');
 	const [modalOpened, setModalOpened] = useState(false);
 	const [survivedProcesses, setSurvivedProcesses] = useState([]);
@@ -30,7 +31,7 @@ const InteractiveUI = ({processes, flags}) => {
 		setRetrievedProcesses(filterProcesses(query, processes, flags));
 	}, [query]);
 
-	const handleReturnKey = (selectedProcess) => {
+	const handleReturnKey = selectedProcess => {
 		performKillSequence(selectedProcess.value);
 	};
 
@@ -67,7 +68,7 @@ const InteractiveUI = ({processes, flags}) => {
 		}
 	};
 
-	const killProcessForce = async (query) => {
+	const killProcessForce = async query => {
 		if (query === 'Y' && survivedProcesses.length > 0) {
 			await fkill(survivedProcesses, {
 				force: true,
@@ -78,83 +79,76 @@ const InteractiveUI = ({processes, flags}) => {
 		process.exit(0);
 	};
 
-	const renderEmpty = () => {
-		return (
-			<Box marginLeft={2}>
-				<Text color="#FF8000">No results...</Text>
+	const renderEmpty = () => (
+		<Box marginLeft={2}>
+			<Text color="#FF8000">No results...</Text>
+		</Box>
+	);
+
+	const renderHeader = () => (
+		<Box>
+			<Box marginRight={1}>
+				<Text bold>
+					<Text color="green">{'? '}</Text>
+					<Text>Running processes:</Text>
+				</Text>
 			</Box>
-		);
-	};
 
-	const renderHeader = () => {
-		return (
-			<Box>
-				<Box marginRight={1}>
-					<Text bold>
-						<Text color="green">{`? `}</Text>
-						<Text>Running processes:</Text>
-					</Text>
-				</Box>
+			<TextInput
+				value={query}
+				focus={!modalOpened}
+				placeholder="Use arrow keys or type to search"
+				onChange={value => {
+					if (hasAnsi(value)) {
+						return;
+					}
 
-				<TextInput
-					value={query}
-					onChange={(val) => {
-						if (hasAnsi(val)) return;
-						setQuery(val);
-					}}
-					focus={!modalOpened}
-					placeholder={"Use arrow keys or type to search"}
-				/>
-			</Box>
-		);
-	};
+					setQuery(value);
+				}}
+			/>
+		</Box>
+	);
 
-	const renderProcessItem = ({isSelected, label}) => {
-		return <Text color={isSelected ? "#00FFFF" : ""}>{label}</Text>
-	};
+	const renderProcessItem = ({isSelected, label}) => <Text color={isSelected ? '#00FFFF' : ''}>{label}</Text>;
 
-	const renderIndicator = ({ isSelected }) => {
-		return <Text color="#00FFFF">{isSelected ? "❯" : " "} </Text>;
-	};
+	const renderIndicator = ({isSelected}) => <Text color="#00FFFF">{isSelected ? '❯' : ' '} </Text>;
 
 	const renderProcessList = () => {
 		if (retrievedProcesses.length === 0) {
-      return renderEmpty();
-    }
+			return renderEmpty();
+		}
 
-    return (
+		return (
 			<SelectInput
 				isFocused
 				limit={PROCESS_LIST_MAX_COUNT}
 				items={retrievedProcesses}
-				onSelect={handleReturnKey}
 				indicatorComponent={renderIndicator}
 				itemComponent={renderProcessItem}
+				onSelect={handleReturnKey}
 			/>
-		);
-  };
-
-	const renderFooter = () => {
-		return (
-      <Box>
-        <Text dimColor>(Move up and down to reveal more choices)</Text>
-      </Box>
 		);
 	};
 
+	const renderFooter = () => (
+		<Box>
+			<Text dimColor>(Move up and down to reveal more choices)</Text>
+		</Box>
+	);
+
 	return (
-    <Box flexDirection="column">
+		<Box flexDirection="column">
 			{renderHeader()}
 			{!modalOpened && renderProcessList()}
 			{!modalOpened && retrievedProcesses.length > 1 && renderFooter()}
 
 			<Modal
 				opened={modalOpened}
-				inputPlaceholder={"(Y/n)"}
+				inputPlaceholder="(Y/n)"
 				message={message}
 				selectHandler={killProcessForce}
 			/>
-    </Box>
+		</Box>
 	);
 };
 

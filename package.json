@@ -69,7 +69,12 @@
 		],
 		"plugins": [
 			"react"
-		]
+		],
+		"rules": {
+			"react/prop-types": "off",
+			"react/state-in-constructor": "off",
+			"unicorn/no-process-exit": "off"
+		}
 	},
 	"devDependencies": {
 		"@babel/cli": "^7.17.6",
@@ -84,6 +89,6 @@
 		"get-port": "^6.0.0",
 		"noop-process": "^5.0.0",
 		"process-exists": "^4.1.0",
-		"xo": "^0.45.0"
+		"xo": "^0.48.0"
 	}
 }
