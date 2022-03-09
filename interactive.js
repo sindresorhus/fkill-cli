@@ -105,7 +105,7 @@ const InteractiveUI = ({processes, flags}) => {
 			return (
 				<TextInput
 					value={query}
-					focus={!modalOpened}
+					focus={!modalOpened && !killingExecuting}
 					placeholder="Use arrow keys or type to search"
 					onChange={textChangeHandler}
 				/>
