@@ -22,6 +22,10 @@ const InteractiveUI = ({processes, flags}) => {
 	const [message, setMessage] = useState('');
 	const [modalOpened, setModalOpened] = useState(false);
 	const [survivedProcesses, setSurvivedProcesses] = useState([]);
+	const [killingExecuting, setKillingExecuting] = useState(false);
+
+	const [selectedProcessName, setSelectedProcessName] = useState('');
+	const [selectedProcessPort, setSelectedProcessPort] = useState(0);
 
 	useEffect(() => {
 		escExit();
@@ -32,6 +36,9 @@ const InteractiveUI = ({processes, flags}) => {
 	}, [query]);
 
 	const handleReturnKey = selectedProcess => {
+		setKillingExecuting(true);
+		setSelectedProcessName(selectedProcess.label.split(' ')[0]);
+		setSelectedProcessPort(selectedProcess.value);
 		performKillSequence(selectedProcess.value);
 	};
 
@@ -56,13 +63,13 @@ const InteractiveUI = ({processes, flags}) => {
 		}
 
 		const suffix = didSurvive.length > 1 ? 'es' : '';
-		const problemText = hadError ? `Error killing process${suffix}.` : `Process${suffix} didn't exit in ${DEFAULT_EXIT_TIMEOUT}ms.`;
+		const problemText = hadError ? `Error killing process${suffix}. ` : `Process${suffix} didn't exit in ${DEFAULT_EXIT_TIMEOUT}ms.`;
 
 		if (process.stdout.isTTY === false) {
 			console.error(`${problemText} Try \`fkill --force ${didSurvive.join(' ')}\``);
 			process.exit(1);
 		} else {
-			setMessage(problemText);
+			setMessage(problemText + ' ');
 			setModalOpened(true);
 			setSurvivedProcesses(didSurvive);
 		}
@@ -85,35 +92,51 @@ const InteractiveUI = ({processes, flags}) => {
 		</Box>
 	);
 
-	const renderHeader = () => (
-		<Box>
-			<Box marginRight={1}>
-				<Text bold>
-					<Text color="green">{'? '}</Text>
-					<Text>Running processes:</Text>
-				</Text>
+	const renderHeader = () => {
+		const renderTextInput = () => {
+			const textChangeHandler = text => {
+				if (hasAnsi(text)) {
+					return;
+				}
+
+				setQuery(text);
+			};
+
+			return (
+				<TextInput
+					value={query}
+					focus={!modalOpened}
+					placeholder="Use arrow keys or type to search"
+					onChange={textChangeHandler}
+				/>
+			);
+		};
+
+		return (
+			<Box>
+				<Box marginRight={1}>
+					<Text>
+						<Text bold color="green">{'? '}</Text>
+						<Text bold>Running processes:</Text>
+						{killingExecuting && <Text color="cyanBright">{' ' + selectedProcessName}</Text>}
+						{killingExecuting && <Text dimColor color="cyanBright">{' ' + selectedProcessPort}</Text>}
+					</Text>
+				</Box>
+
+				{!killingExecuting && renderTextInput()}
 			</Box>
-
-			<TextInput
-				value={query}
-				focus={!modalOpened}
-				placeholder="Use arrow keys or type to search"
-				onChange={value => {
-					if (hasAnsi(value)) {
-						return;
-					}
-
-					setQuery(value);
-				}}
-			/>
-		</Box>
-	);
+		);
+	};
 
 	const renderProcessItem = ({isSelected, label}) => <Text color={isSelected ? '#00FFFF' : ''}>{label}</Text>;
 
 	const renderIndicator = ({isSelected}) => <Text color="#00FFFF">{isSelected ? '❯' : ' '} </Text>;
 
 	const renderProcessList = () => {
+		if (modalOpened || killingExecuting) {
+			return null;
+		}
+
 		if (retrievedProcesses.length === 0) {
 			return renderEmpty();
 		}
@@ -130,17 +153,23 @@ const InteractiveUI = ({processes, flags}) => {
 		);
 	};
 
-	const renderFooter = () => (
-		<Box>
-			<Text dimColor>(Move up and down to reveal more choices)</Text>
-		</Box>
-	);
+	const renderFooter = () => {
+		if (modalOpened || killingExecuting || retrievedProcesses.length === 0) {
+			return null;
+		}
+
+		return (
+			<Box>
+				<Text dimColor>(Move up and down to reveal more choices)</Text>
+			</Box>
+		);
+	};
 
 	return (
 		<Box flexDirection="column">
 			{renderHeader()}
-			{!modalOpened && renderProcessList()}
-			{!modalOpened && retrievedProcesses.length > 1 && renderFooter()}
+			{renderProcessList()}
+			{renderFooter()}
 
 			<Modal
 				opened={modalOpened}
