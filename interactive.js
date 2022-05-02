@@ -1,8 +1,7 @@
 import process from 'node:process';
 import {createRequire} from 'node:module';
 import React, {useState, useEffect} from 'react';
-import {Box, Text} from 'ink';
-import escExit from 'esc-exit';
+import {Box, Text, useStdin, useInput, useApp} from 'ink';
 import fkill from 'fkill';
 import hasAnsi from 'has-ansi';
 import {processExited, filterProcesses} from './utilities.js';
@@ -27,9 +26,16 @@ const InteractiveUI = ({processes, flags}) => {
 	const [selectedProcessName, setSelectedProcessName] = useState('');
 	const [selectedProcessPort, setSelectedProcessPort] = useState(0);
 
-	useEffect(() => {
-		escExit();
-	}, []);
+	const {setRawMode} = useStdin();
+	setRawMode(true);
+
+	const {exit} = useApp();
+
+	useInput((_input, key) => {
+		if (key.escape) {
+			exit();
+		}
+	});
 
 	useEffect(() => {
 		setRetrievedProcesses(filterProcesses(query, processes, flags));
