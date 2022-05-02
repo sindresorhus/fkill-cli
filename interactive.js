@@ -88,7 +88,7 @@ const InteractiveUI = ({processes, flags}) => {
 
 	const renderEmpty = () => (
 		<Box marginLeft={2}>
-			<Text color="#FF8000">No results…</Text>
+			<Text dimColor color="yellow">No results…</Text>
 		</Box>
 	);
 
@@ -128,9 +128,9 @@ const InteractiveUI = ({processes, flags}) => {
 		);
 	};
 
-	const renderProcessItem = ({isSelected, label}) => <Text color={isSelected ? '#00FFFF' : ''}>{label}</Text>;
+	const renderProcessItem = ({isSelected, label}) => <Text color={isSelected ? 'cyan' : ''}>{label}</Text>;
 
-	const renderIndicator = ({isSelected}) => <Text color="#00FFFF">{isSelected ? '❯' : ' '} </Text>;
+	const renderIndicator = ({isSelected}) => <Text color="cyan">{isSelected ? '❯' : ' '} </Text>;
 
 	const renderProcessList = () => {
 		if (confirmDialogOpened || killingExecuting) {
