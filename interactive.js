@@ -88,7 +88,7 @@ const InteractiveUI = ({processes, flags}) => {
 
 	const renderEmpty = () => (
 		<Box marginLeft={2}>
-			<Text color="">No results…</Text>
+			<Text color="#FF8000">No results…</Text>
 		</Box>
 	);
 
