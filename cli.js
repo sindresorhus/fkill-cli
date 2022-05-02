@@ -4,7 +4,7 @@ import React from 'react';
 import meow from 'meow';
 import fkill from 'fkill';
 import {render} from 'ink';
-import {listAllProcesses} from './utils.js';
+import {listAllProcesses} from './utilities.js';
 import {InteractiveUI} from './interactive.js';
 import {Dialog} from './dialog.js';
 

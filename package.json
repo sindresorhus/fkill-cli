@@ -12,17 +12,17 @@
 	},
 	"type": "module",
 	"bin": {
-		"fkill": "./dist/cli.js"
+		"fkill": "./distribution/cli.js"
 	},
 	"engines": {
 		"node": "^14.13.1 || >=16.0.0"
 	},
 	"scripts": {
-		"test": "xo && ava",
-		"build": "babel ./*.js --out-dir dist"
+		"test": "npm run build && xo && ava",
+		"build": "babel ./*.js --out-dir distribution"
 	},
 	"files": [
-		"./dist/*.js"
+		"distribution"
 	],
 	"keywords": [
 		"cli-app",

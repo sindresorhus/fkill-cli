@@ -5,7 +5,7 @@ import {Box, Text} from 'ink';
 import escExit from 'esc-exit';
 import fkill from 'fkill';
 import hasAnsi from 'has-ansi';
-import {processExited, filterProcesses} from './utils.js';
+import {processExited, filterProcesses} from './utilities.js';
 import {Dialog} from './dialog.js';
 
 const require = createRequire(import.meta.url);
@@ -52,7 +52,7 @@ const InteractiveUI = ({processes, flags}) => {
 		try {
 			await fkill(processes);
 			const exited = await Promise.all(processes.map(process => processExited(process, DEFAULT_EXIT_TIMEOUT)));
-			didSurvive = processes.filter((_, i) => !exited[i]);
+			didSurvive = processes.filter((_, index) => !exited[index]);
 		} catch (error) {
 			didSurvive = processes;
 			hadError = error;
@@ -88,7 +88,7 @@ const InteractiveUI = ({processes, flags}) => {
 
 	const renderEmpty = () => (
 		<Box marginLeft={2}>
-			<Text color="#FF8000">No results...</Text>
+			<Text color="">No results…</Text>
 		</Box>
 	);
 
