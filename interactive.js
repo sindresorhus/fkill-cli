@@ -25,6 +25,7 @@ const InteractiveUI = ({processes, flags}) => {
 
 	const [selectedProcessName, setSelectedProcessName] = useState('');
 	const [selectedProcessPort, setSelectedProcessPort] = useState(0);
+	const [showHelpMessages, setShowHelpMessages] = useState(true);
 
 	const {exit} = useApp();
 
@@ -98,6 +99,7 @@ const InteractiveUI = ({processes, flags}) => {
 	const renderHeader = () => {
 		const renderTextInput = () => {
 			const textChangeHandler = text => {
+				setShowHelpMessages(false);
 				if (hasAnsi(text)) {
 					return;
 				}
@@ -109,7 +111,7 @@ const InteractiveUI = ({processes, flags}) => {
 				<TextInput
 					value={query}
 					focus={!confirmDialogOpened && !killingExecuting}
-					placeholder="(Use arrow keys or type to search)"
+					placeholder={showHelpMessages && '(Use arrow keys or type to search)'}
 					onChange={textChangeHandler}
 				/>
 			);
@@ -163,7 +165,7 @@ const InteractiveUI = ({processes, flags}) => {
 
 		return (
 			<Box>
-				<Text dimColor>(Move up and down to reveal more choices)</Text>
+				<Text dimColor>{showHelpMessages && '(Move up and down to reveal more choices)'}</Text>
 			</Box>
 		);
 	};
