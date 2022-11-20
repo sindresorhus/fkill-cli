@@ -95,7 +95,12 @@ const filterProcesses = (input, processes, flags) => {
 
 	const filteredProcesses = new FuzzySearch(
 		processes,
-		[flags.verbose && !isWindows ? 'cmd' : 'name'],
+		[
+			// The name is truncated for some reason, so we always use `cmd` for now.
+			'cmd',
+			/// flags.verbose && !isWindows ? 'cmd' : 'name',
+			'pid',
+		],
 		{
 			caseSensitive: false,
 		},
