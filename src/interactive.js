@@ -1,5 +1,4 @@
 import process from 'node:process';
-import {createRequire} from 'node:module';
 import React, {useState, useEffect} from 'react';
 import {Box, Text, useInput, useApp} from 'ink';
 import fkill from 'fkill';
@@ -7,9 +6,7 @@ import hasAnsi from 'has-ansi';
 import {processExited, filterProcesses} from './utilities.js';
 import {Dialog} from './dialog.js';
 import TextInput from './ink-text-input/index.js';
-
-const require = createRequire(import.meta.url);
-const SelectInput = require('ink-select-input').default;
+import SelectInput from './ink-select-input/index.js';
 
 const DEFAULT_EXIT_TIMEOUT = 3000;
 

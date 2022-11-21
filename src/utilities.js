@@ -159,9 +159,21 @@ const regexLastIndexOf = (string, regex, fromIndex) => {
 	return -1;
 };
 
+const arrayRotate = (input, n) => {
+	if (!Array.isArray(input)) {
+		throw new TypeError(`Expected an array, got ${typeof input}`);
+	}
+
+	const x = [...input];
+	const number_ = typeof n === 'number' ? n : 0;
+
+	return [...x.splice(-number_ % x.length), x];
+};
+
 export {
 	listAllProcesses,
 	processExited,
 	filterProcesses,
 	regexLastIndexOf,
+	arrayRotate,
 };
