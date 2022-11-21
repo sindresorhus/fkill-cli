@@ -167,7 +167,7 @@ const arrayRotate = (input, n) => {
 	const x = [...input];
 	const number_ = typeof n === 'number' ? n : 0;
 
-	return [...x.splice(-number_ % x.length), x];
+	return [...x.splice(-number_ % x.length), ...x];
 };
 
 export {
