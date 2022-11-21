@@ -19,7 +19,7 @@
 	},
 	"scripts": {
 		"test": "npm run build && xo && ava",
-		"build": "babel ./*.js --out-dir distribution"
+		"build": "babel ./src --out-dir distribution"
 	},
 	"files": [
 		"distribution"

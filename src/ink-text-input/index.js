@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Text, useInput} from 'ink';
 import chalk from 'chalk';
-import {regexLastIndexOf} from './utilities.js';
+import {regexLastIndexOf} from '../utilities.js';
 
 // Patched from https://github.com/vadimdemedes/ink-text-input
 const TextInput = ({

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Box, Text} from 'ink';
-import TextInput from './text-input.js';
+import TextInput from './ink-text-input/index.js';
 
 const Dialog = ({opened, inputPlaceholder, message, selectHandler}) => {
 	const [query, setQuery] = useState('');

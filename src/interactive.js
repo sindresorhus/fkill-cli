@@ -6,7 +6,7 @@ import fkill from 'fkill';
 import hasAnsi from 'has-ansi';
 import {processExited, filterProcesses} from './utilities.js';
 import {Dialog} from './dialog.js';
-import TextInput from './text-input.js';
+import TextInput from './ink-text-input/index.js';
 
 const require = createRequire(import.meta.url);
 const SelectInput = require('ink-select-input').default;
