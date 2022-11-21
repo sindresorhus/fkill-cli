@@ -22,8 +22,8 @@ const TextInput = ({
 	const handleDeleteKeyPress = (input, key) => {
 		let nextValue = value;
 
-		if (key.delete) {
-			nextValue = nextValue.slice(0, -1);
+		if (key.meta && key.delete) {
+			nextValue = cursorOffset >= value.length ? nextValue.slice(0, -1) : nextValue.slice(0, cursorOffset) + nextValue.slice(cursorOffset + 1);
 
 			if (nextValue !== originalValue) {
 				onChange(nextValue);
