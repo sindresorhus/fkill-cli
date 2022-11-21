@@ -6,9 +6,9 @@ import fkill from 'fkill';
 import hasAnsi from 'has-ansi';
 import {processExited, filterProcesses} from './utilities.js';
 import {Dialog} from './dialog.js';
+import TextInput from './text-input.js';
 
 const require = createRequire(import.meta.url);
-const TextInput = require('ink-text-input').default;
 const SelectInput = require('ink-select-input').default;
 
 const DEFAULT_EXIT_TIMEOUT = 3000;
@@ -92,7 +92,7 @@ const InteractiveUI = ({processes, flags}) => {
 
 	const renderEmpty = () => (
 		<Box marginLeft={2}>
-			<Text dimColor color="yellow">No results…</Text>
+			<Text color="yellow">No results…</Text>
 		</Box>
 	);
 

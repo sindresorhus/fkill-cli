@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {Text, useInput} from 'ink';
 import chalk from 'chalk';
+import {regexLastIndexOf} from './utilities.js';
 
 // Patched from https://github.com/vadimdemedes/ink-text-input
 const TextInput = ({
@@ -17,6 +18,76 @@ const TextInput = ({
 		cursorOffset: (originalValue || '').length,
 		cursorWidth: 0,
 	});
+
+	const handleDeleteKeyPress = (input, key) => {
+		let nextValue = value;
+
+		if (key.delete) {
+			nextValue = nextValue.slice(0, -1);
+
+			if (nextValue !== originalValue) {
+				onChange(nextValue);
+			}
+
+			return true;
+		}
+
+		if (key.meta && input === 'd') {
+			if (cursorOffset >= value.length) {
+				nextValue = '';
+			} else {
+				const closestWhitespaceIndex = regexLastIndexOf(nextValue, /\s+/g, cursorOffset);
+				nextValue = value.slice(0, cursorOffset);
+
+				if (closestWhitespaceIndex !== -1) {
+					nextValue += value.slice(closestWhitespaceIndex);
+				}
+			}
+
+			if (nextValue !== originalValue) {
+				onChange(nextValue);
+			}
+
+			return true;
+		}
+
+		return false;
+	};
+
+	const handleWordMove = (input, key) => {
+		if (!key.meta) {
+			return false;
+		}
+
+		if (input !== 'b' && input !== 'f') {
+			return false;
+		}
+
+		let nextCursorOffset = cursorOffset;
+
+		if (input === 'b') {
+			if (cursorOffset >= value.length) {
+				nextCursorOffset = value.length - 1;
+			}
+
+			const closestWhitespaceIndex = regexLastIndexOf([...value].reverse().join(''), /\s+/g, value.length - nextCursorOffset - 1);
+			nextCursorOffset = closestWhitespaceIndex === -1 ? 0 : value.length - closestWhitespaceIndex - 1;
+
+			while (nextCursorOffset > 0 && value[nextCursorOffset - 1] !== ' ') {
+				--nextCursorOffset;
+			}
+		} else if (input === 'f') {
+			const closestWhitespaceIndex = regexLastIndexOf(value, /\s+/g, nextCursorOffset);
+			nextCursorOffset = closestWhitespaceIndex === -1 ? value.length - 1 : closestWhitespaceIndex;
+		}
+
+		setState({
+			cursorOffset: nextCursorOffset,
+			cursorWidth,
+		});
+
+		return true;
+	};
 
 	useEffect(() => {
 		setState(previousState => {
@@ -88,6 +159,10 @@ const TextInput = ({
 			let nextCursorOffset = cursorOffset;
 			let nextValue = originalValue;
 			let nextCursorWidth = 0;
+
+			if (handleWordMove(input, key) || handleDeleteKeyPress(input, key)) {
+				return;
+			}
 
 			if (key.leftArrow) {
 				if (showCursor) {

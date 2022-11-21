@@ -54,7 +54,6 @@
 		"has-ansi": "^5.0.1",
 		"ink": "^3.2.0",
 		"ink-select-input": "^4.2.1",
-		"ink-text-input": "^4.0.3",
 		"meow": "^10.1.1",
 		"num-sort": "^3.0.0",
 		"pid-port": "^0.2.0",

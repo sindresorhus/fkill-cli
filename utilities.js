@@ -151,8 +151,17 @@ const listAllProcesses = async () => {
 	return processes.map(process_ => ({...process_, ports: getPortsFromPid(process_.pid, pids)}));
 };
 
+const regexLastIndexOf = (string, regex, fromIndex) => {
+	if (regex.test(fromIndex ? string.slice(fromIndex) : string)) {
+		return regex.lastIndex + fromIndex;
+	}
+
+	return -1;
+};
+
 export {
 	listAllProcesses,
 	processExited,
 	filterProcesses,
+	regexLastIndexOf,
 };

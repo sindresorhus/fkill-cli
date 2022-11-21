@@ -1,9 +1,6 @@
-import {createRequire} from 'node:module';
 import React, {useState} from 'react';
 import {Box, Text} from 'ink';
-
-const require = createRequire(import.meta.url);
-const TextInput = require('ink-text-input').default;
+import TextInput from './text-input.js';
 
 const Dialog = ({opened, inputPlaceholder, message, selectHandler}) => {
 	const [query, setQuery] = useState('');
