@@ -85,11 +85,13 @@ const preferHeurisicallyInterestingProcesses = (a, b) => {
 	return preferLowAlphanumericNames(a, b);
 };
 
+const searchPort = (processes, input) => processes.filter(process_ => process_.ports.map(port => String(port).includes(input)).some(v => v));
+
 const filterProcesses = (input, processes, flags) => {
 	const memoryThreshold = flags.verbose ? 0 : 1;
 	const cpuThreshold = flags.verbose ? 0 : 3;
 
-	const filteredProcesses = input.startsWith(':') ? processes.filter(process_ => String(process_.pid).includes(input.slice(1))) : new FuzzySearch(
+	const filteredProcesses = input.startsWith(':') ? searchPort(processes, input.slice(1)) : new FuzzySearch(
 		processes,
 		[flags.verbose && !isWindows ? 'cmd' : 'name'],
 		{
