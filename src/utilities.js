@@ -93,7 +93,7 @@ const filterProcesses = (input, processes, flags) => {
 
 	const filteredProcesses = input.startsWith(':') ? searchPort(processes, input.slice(1)) : new FuzzySearch(
 		processes,
-		[flags.verbose && !isWindows ? 'cmd' : 'name'],
+		[flags.verbose && !isWindows ? 'cmd' : 'name', 'pid'],
 		{
 			caseSensitive: false,
 		},
