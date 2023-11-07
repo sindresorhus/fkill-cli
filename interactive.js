@@ -8,7 +8,7 @@ import escExit from 'esc-exit';
 import cliTruncate from 'cli-truncate';
 import {allPortsWithPid} from 'pid-port';
 import fkill from 'fkill';
-import processExists from 'process-exists';
+import {processExists} from 'process-exists';
 import FuzzySearch from 'fuzzy-search';
 
 const isWindows = process.platform === 'win32';

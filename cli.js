@@ -33,47 +33,43 @@ const cli = meow(`
 	flags: {
 		force: {
 			type: 'boolean',
-			alias: 'f',
+			shortFlag: 'f',
 		},
 		verbose: {
 			type: 'boolean',
-			alias: 'v',
+			shortFlag: 'v',
 		},
 		silent: {
 			type: 'boolean',
-			alias: 's',
+			shortFlag: 's',
 		},
 		forceAfterTimeout: {
 			type: 'number',
-			alias: 't',
+			shortFlag: 't',
 		},
 	},
 });
 
-(async () => {
-	if (cli.input.length === 0) {
-		// eslint-disable-next-line node/no-unsupported-features/es-syntax
-		(await import('./interactive.js')).init(cli.flags);
-	} else {
-		const forceAfterTimeout = cli.flags.forceAfterTimeout === undefined ? undefined : cli.flags.forceAfterTimeout * 1000;
-		const promise = fkill(cli.input, {...cli.flags, forceAfterTimeout, ignoreCase: true});
+if (cli.input.length === 0) {
+	const interactiveInterface = await import('./interactive.js');
+	interactiveInterface.init(cli.flags);
+} else {
+	const forceAfterTimeout = cli.flags.forceAfterTimeout === undefined ? undefined : cli.flags.forceAfterTimeout * 1000;
+	const promise = fkill(cli.input, {...cli.flags, forceAfterTimeout, ignoreCase: true});
 
-		if (!cli.flags.force) {
-			try {
-				await promise;
-			} catch (error) {
-				if (cli.flags.silent) {
-					return;
-				}
-
+	if (!cli.flags.force) {
+		try {
+			await promise;
+		} catch (error) {
+			if (!cli.flags.silent) {
 				if (error.message.includes('Could not find a process with port')) {
 					console.error(error.message);
 					process.exit(1);
 				}
 
-				// eslint-disable-next-line node/no-unsupported-features/es-syntax
-				(await import('./interactive.js')).handleFkillError(cli.input);
+				const interactiveInterface = await import('./interactive.js');
+				interactiveInterface.handleFkillError(cli.input);
 			}
 		}
 	}
-})();
+}
