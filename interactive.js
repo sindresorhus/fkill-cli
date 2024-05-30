@@ -97,9 +97,11 @@ const filterProcesses = (input, processes, flags) => {
 		processes,
 		[
 			// The name is truncated for some reason, so we always use `cmd` for now.
-			'cmd',
+			//'cmd',
 			/// flags.verbose && !isWindows ? 'cmd' : 'name',
 			'pid',
+			'name',
+			'ports',
 		],
 		{
 			caseSensitive: false,
