@@ -16,7 +16,7 @@
 	},
 	"sideEffects": false,
 	"engines": {
-		"node": ">=18"
+		"node": ">=20"
 	},
 	"scripts": {
 		"test": "xo && ava"
@@ -43,25 +43,25 @@
 		"proc"
 	],
 	"dependencies": {
-		"chalk": "^5.3.0",
-		"cli-truncate": "^4.0.0",
-		"esc-exit": "^3.0.0",
-		"fkill": "^9.0.0",
+		"@inquirer/search": "^3.2.1",
+		"chalk": "^5.6.2",
+		"cli-truncate": "^5.1.1",
+		"esc-exit": "^3.0.1",
+		"fkill": "^10.0.0",
 		"fuzzy-search": "^3.2.1",
-		"inquirer": "^9.2.11",
-		"inquirer-autocomplete-prompt": "^3.0.1",
-		"meow": "^12.1.1",
-		"num-sort": "^3.0.0",
-		"pid-port": "^1.0.0",
-		"ps-list": "^8.1.1"
+		"inquirer": "^12.11.0",
+		"meow": "^14.0.0",
+		"num-sort": "^4.0.0",
+		"pid-port": "^2.0.0",
+		"ps-list": "^9.0.0"
 	},
 	"devDependencies": {
-		"ava": "^5.3.1",
-		"delay": "^6.0.0",
-		"execa": "^8.0.1",
-		"get-port": "^7.0.0",
+		"ava": "^6.4.1",
+		"delay": "^7.0.0",
+		"execa": "^9.6.0",
+		"get-port": "^7.1.0",
 		"noop-process": "^5.0.0",
 		"process-exists": "^5.0.0",
-		"xo": "^0.56.0"
+		"xo": "^1.2.3"
 	}
 }

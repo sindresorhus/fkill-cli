@@ -54,5 +54,5 @@ Run `fkill` without arguments to launch the interactive UI.
 
 ## Related
 
-- [fkill](https://github.com/sindresorhus/fkill) - API for this module
-- [alfred-fkill](https://github.com/SamVerschueren/alfred-fkill) - Alfred workflow for this module
+- [fkill](https://github.com/sindresorhus/fkill) - API for this package
+- [alfred-fkill](https://github.com/SamVerschueren/alfred-fkill) - Alfred workflow for this package
