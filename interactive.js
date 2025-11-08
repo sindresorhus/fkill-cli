@@ -121,24 +121,29 @@ const searchProcessesByPort = (processes, port) => processes.filter(process_ => 
 
 const searchProcessByPid = (processes, pid) => processes.find(process_ => String(process_.pid) === pid);
 
-const searchProcessesByName = (processes, term, searcher) => {
-	const lowerTerm = term.toLowerCase();
+const searchProcessesByName = (processes, term, searcher, flags = {}) => {
+	// Determine if we should match case-sensitively
+	const hasUpperCase = /[A-Z]/.test(term);
+	const shouldMatchCase = flags.caseSensitive || (flags.smartCase && hasUpperCase);
+
+	const normalizedTerm = shouldMatchCase ? term : term.toLowerCase();
 	const exactMatches = [];
 	const startsWithMatches = [];
 	const containsMatches = [];
 
 	for (const process_ of processes) {
-		const lowerName = process_.name.toLowerCase();
-		if (lowerName === lowerTerm) {
+		const normalizedName = shouldMatchCase ? process_.name : process_.name.toLowerCase();
+		if (normalizedName === normalizedTerm) {
 			exactMatches.push(process_);
-		} else if (lowerName.startsWith(lowerTerm)) {
+		} else if (normalizedName.startsWith(normalizedTerm)) {
 			startsWithMatches.push(process_);
-		} else if (lowerName.includes(lowerTerm)) {
+		} else if (normalizedName.includes(normalizedTerm)) {
 			containsMatches.push(process_);
 		}
 	}
 
 	// Fuzzy matches (excluding all exact/starts/contains matches)
+	// Keep fuzzy search case-insensitive for better UX
 	const matchedPids = new Set([...exactMatches, ...startsWithMatches, ...containsMatches].map(process_ => process_.pid));
 	const fuzzyResults = searcher.search(term).filter(process_ => !matchedPids.has(process_.pid));
 
@@ -146,7 +151,7 @@ const searchProcessesByName = (processes, term, searcher) => {
 	return [...exactMatches, ...startsWithMatches, ...containsMatches, ...fuzzyResults];
 };
 
-const filterAndSortProcesses = (processes, term, searcher) => {
+const filterAndSortProcesses = (processes, term, searcher, flags) => {
 	const filtered = processes.filter(process_ => !isHelperProcess(process_));
 
 	// No search term: show all sorted by performance
@@ -167,16 +172,21 @@ const filterAndSortProcesses = (processes, term, searcher) => {
 	}
 
 	// Search by name
-	return searchProcessesByName(filtered, term, searcher);
+	return searchProcessesByName(filtered, term, searcher, flags);
 };
 
-const handleFkillError = async processes => {
-	const shouldForceKill = await promptForceKill(processes, 'Error killing process.');
+const handleFkillError = async (inputs, flags = {}) => {
+	const shouldForceKill = await promptForceKill(inputs, 'Error killing process.');
 
 	if (shouldForceKill) {
-		await fkill(processes, {
+		// Determine case sensitivity based on flags and inputs
+		// If ANY input has uppercase letter, match case-sensitively with --smart-case
+		const hasUpperCase = inputs.some(input => /[A-Z]/.test(String(input)));
+		const ignoreCase = flags.caseSensitive ? false : (flags.smartCase ? !hasUpperCase : true);
+
+		await fkill(inputs, {
 			force: true,
-			ignoreCase: true,
+			ignoreCase,
 		});
 	}
 };
@@ -250,7 +260,7 @@ const listProcesses = async (processes, flags) => {
 		message: 'Running processes:',
 		pageSize: 10,
 		async source(term = '') {
-			const matchingProcesses = filterAndSortProcesses(processes, term, searcher);
+			const matchingProcesses = filterAndSortProcesses(processes, term, searcher, flags);
 			return matchingProcesses.map(process_ => renderProcessForDisplay(process_, flags, memoryThreshold, cpuThreshold));
 		},
 	});

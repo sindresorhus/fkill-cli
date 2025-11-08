@@ -1,3 +1,4 @@
+import process from 'node:process';
 import childProcess from 'node:child_process';
 import test from 'ava';
 import {execa} from 'execa';
@@ -53,5 +54,46 @@ test('force killing process at unused port throws error', async t => {
 
 test('silently force killing process at unused port exits with code 0', async t => {
 	const {exitCode} = await execa('./cli.js', ['--force', '--silent', ':1337']);
+	t.is(exitCode, 0);
+});
+
+// Case-sensitivity tests only work on Unix-like systems
+// Windows process names work differently and don't support custom titles via noopProcess
+if (process.platform !== 'win32') {
+	test('default case-insensitive behavior', async t => {
+		const pid = await noopProcess({title: 'DefaultCase'});
+		await execa('./cli.js', ['--force', 'defaultcase']);
+		await noopProcessKilled(t, pid);
+	});
+
+	test('case-sensitive flag makes matching case-sensitive', async t => {
+		const pid = await noopProcess({title: 'CaseSensitive'});
+		await t.throwsAsync(
+			execa('./cli.js', ['--case-sensitive', '--force', 'casesensitive']),
+			{message: /Killing process casesensitive failed/},
+		);
+		// Clean up the process
+		await execa('./cli.js', ['--force', pid]);
+	});
+
+	test('smart-case with lowercase is case-insensitive', async t => {
+		const pid = await noopProcess({title: 'SmartLower'});
+		await execa('./cli.js', ['--smart-case', '--force', 'smartlower']);
+		await noopProcessKilled(t, pid);
+	});
+
+	test('smart-case with uppercase is case-sensitive', async t => {
+		const pid = await noopProcess({title: 'smartupper'});
+		await t.throwsAsync(
+			execa('./cli.js', ['--smart-case', '--force', 'SmartUpper']),
+			{message: /Killing process SmartUpper failed/},
+		);
+		// Clean up the process
+		await execa('./cli.js', ['--force', pid]);
+	});
+}
+
+test('silent flag with -s shortflag works', async t => {
+	const {exitCode} = await execa('./cli.js', ['-s', '--force', ':1337']);
 	t.is(exitCode, 0);
 });

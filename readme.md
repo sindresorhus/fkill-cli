@@ -29,6 +29,8 @@ $ fkill --help
 		--verbose, -v                Show process arguments
 		--silent, -s                 Silently kill and always exit with code 0
 		--force-timeout <N>, -t <N>  Force kill processes which didn't exit after N seconds
+		--smart-case                 Case-insensitive unless pattern contains uppercase
+		--case-sensitive             Force case-sensitive matching
 
 	Examples
 		$ fkill 1337
@@ -43,7 +45,7 @@ $ fkill --help
 	In interactive mode, 🚦n% indicates high CPU usage and 🐏n% indicates high memory usage.
 	Supports fuzzy search in the interactive mode.
 
-	The process name is case insensitive.
+	The process name is case-insensitive by default.
 ```
 
 ## Interactive UI
